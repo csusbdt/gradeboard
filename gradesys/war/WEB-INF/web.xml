@@ -1,49 +1,66 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?><web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.5" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+
+    
+	<!-- Filters -->
+	
+	<filter>
+		<filter-name>LoginFilter</filter-name>
+		<filter-class>gradesys.LoginFilter</filter-class>
+	</filter>
+    
+    <!-- Servlets -->
+    
+    <!-- 
 	<servlet>
 		<servlet-name>Gradesys</servlet-name>
 		<servlet-class>gradesys.GradesysServlet</servlet-class>
 	</servlet>
+	-->
+	
+	<servlet>
+		<servlet-name>SystemServiceServlet</servlet-name>
+		<servlet-class>com.google.api.server.spi.SystemServiceServlet</servlet-class>
+		<init-param>
+			<param-name>services</param-name>
+			<param-value/>
+		</init-param>
+	</servlet>
+ 
+	<servlet>
+		<servlet-name>Logout</servlet-name>
+		<servlet-class>gradesys.LogoutServlet</servlet-class>
+	</servlet>
+
+	<!-- Filter Mappings -->
+	
+	<filter-mapping>
+ 		<filter-name>LoginFilter</filter-name>
+		<url-pattern>/instructor/*</url-pattern>
+	</filter-mapping>
+		
+	<!-- Servlet Mappings -->
+	
+	<!-- 
 	<servlet-mapping>
 		<servlet-name>Gradesys</servlet-name>
 		<url-pattern>/gradesys</url-pattern>
 	</servlet-mapping>
+	-->
+	
+	<servlet-mapping>
+		<servlet-name>SystemServiceServlet</servlet-name>
+		<url-pattern>/_ah/spi/*</url-pattern>
+	</servlet-mapping>
+ 
+	<servlet-mapping>
+		<servlet-name>Logout</servlet-name>
+		<url-pattern>/instructor/logout</url-pattern>
+	</servlet-mapping> 
+	
+	<!-- Welcome File List -->
+	
 	<welcome-file-list>
 		<welcome-file>index.html</welcome-file>
 	</welcome-file-list>
- <servlet>
-  <servlet-name>SystemServiceServlet</servlet-name>
-  <servlet-class>com.google.api.server.spi.SystemServiceServlet</servlet-class>
-  <init-param>
-   <param-name>services</param-name>
-   <param-value/>
-  </init-param>
- </servlet>
- <filter>
-  <filter-name>LoginFilter</filter-name>
-  <filter-class>gradesys.LoginFilter</filter-class>
-  </filter>
- 
- <servlet>
-  <servlet-name>Logout</servlet-name>
-  <servlet-class>gradesys.LogoutServlet</servlet-class>
- </servlet>
-
- <servlet-mapping>
-  <servlet-name>SystemServiceServlet</servlet-name>
-  <url-pattern>/_ah/spi/*</url-pattern>
- </servlet-mapping>
- 
-  <servlet-mapping>
-   <servlet-name>Logout</servlet-name>
-   <url-pattern>/instructor/logout</url-pattern>
-  </servlet-mapping> 
- 
- <filter-mapping>
-  <filter-name>LoginFilter</filter-name>
-  <url-pattern>/instructor/*</url-pattern>
- </filter-mapping>
- 
-
- 
  
 </web-app>
