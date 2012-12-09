@@ -18,8 +18,32 @@
    <param-value/>
   </init-param>
  </servlet>
+ <filter>
+  <filter-name>LoginFilter</filter-name>
+  <filter-class>gradesys.LoginFilter</filter-class>
+  </filter>
+ 
+ <servlet>
+  <servlet-name>Logout</servlet-name>
+  <servlet-class>gradesys.LogoutServlet</servlet-class>
+ </servlet>
+
  <servlet-mapping>
   <servlet-name>SystemServiceServlet</servlet-name>
   <url-pattern>/_ah/spi/*</url-pattern>
  </servlet-mapping>
+ 
+  <servlet-mapping>
+   <servlet-name>Logout</servlet-name>
+   <url-pattern>/instructor/logout</url-pattern>
+  </servlet-mapping> 
+ 
+ <filter-mapping>
+  <filter-name>LoginFilter</filter-name>
+  <url-pattern>/instructor/*</url-pattern>
+ </filter-mapping>
+ 
+
+ 
+ 
 </web-app>
