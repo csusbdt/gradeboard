@@ -30,6 +30,11 @@
 		<servlet-name>Logout</servlet-name>
 		<servlet-class>gradesys.LogoutServlet</servlet-class>
 	</servlet>
+	
+	<servlet>
+		<servlet-name>InstructorController</servlet-name>
+		<servlet-class>gradesys.InstructorControllerServlet</servlet-class>
+	</servlet>
 
 	<!-- Filter Mappings -->
 	
@@ -54,7 +59,12 @@
  
 	<servlet-mapping>
 		<servlet-name>Logout</servlet-name>
-		<url-pattern>/instructor/logout</url-pattern>
+		<url-pattern>/logout</url-pattern>
+	</servlet-mapping> 
+	
+	<servlet-mapping>
+		<servlet-name>InstructorController</servlet-name>
+		<url-pattern>/instructor/controller</url-pattern>
 	</servlet-mapping> 
 	
 	<!-- Welcome File List -->
