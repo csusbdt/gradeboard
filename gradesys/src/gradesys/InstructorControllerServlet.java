@@ -9,26 +9,28 @@ import javax.servlet.http.HttpServletResponse;
 
 @SuppressWarnings("serial")
 public class InstructorControllerServlet extends HttpServlet {	
+
+	private String courseAdd(HttpServletRequest req, HttpServletResponse resp) {
+		String courseName = req.getParameter("courseName");
+		try {
+			Course.create(courseName);
+		} catch (CourseAlreadyExistsException e) {
+			return "{ \"err\": \"Course name already taken.\" }";
+		}
+		return "{}";	
+	}
 	
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
-		
-		try {
-			
-			String operation = req.getParameter("op");
-			if(!Util.isEmpty(operation)) {
-				
-				if(operation.equalsIgnoreCase("courseadd")) {
-					String courseName = req.getParameter("courseName");
-					//Course.add(courseName);
-				}
+		String operation = req.getParameter("op");
+		if(operation != null) { // !Util.isEmpty(operation)) {
+			if(operation.equalsIgnoreCase("courseadd")) {
+				resp.getWriter().write(courseAdd(req, resp));
 			}
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} else {
+			resp.getWriter().print("{ \"err\": \"unknown operation\" }");
 		}
-		
 	}
 	
 }

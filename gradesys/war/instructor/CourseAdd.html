@@ -38,18 +38,23 @@
 		
 		$(document).bind('pageinit', function() {
 			$('#saveLink').click( function() {
-				console.log("Save button clicked");
-				
 				$.ajax({
-					  type: 'POST',
-					  url: "/instructor/controller",
-					  data: {name : 'xyz',
-						     op   : 'courseAdd'},
-					  success: function() {
-						  alert('good');
-					  },
-					  dataType: "json"
-					});
+				  type: 'POST',
+				  url: "/instructor/controller",
+				  data: {name : 'xyz',
+					     op   : 'courseAdd'},
+				  success: function(data) {
+				      if (data.err) {
+  						  console.log('not good: ' + data.err);
+				      } else {
+    					  console.log('good');
+       				  }
+				  },
+				  error: function() {
+				  	consol.log('error');
+				  },
+				  dataType: "json"
+				});
 			});
 		});		
 		
