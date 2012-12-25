@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.google.appengine.api.users.User;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
+import com.google.appengine.labs.repackaged.org.json.JSONArray;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
 
 @SuppressWarnings("serial")
@@ -47,10 +48,10 @@ public class InstructorControllerServlet extends HttpServlet {
 			if(courses.size() == 0)
 				return "{}";
 			
-			JSONObject jsonArray = new JSONObject();
+			JSONArray jsonArray = new JSONArray();
 			for(int i = 0; i < courses.size(); i++) {
 				Course course = courses.get(i);
-				jsonArray.put("courseName", course.getName());
+				jsonArray.put(course.getName());
 			}
 			JSONObject jsonObject = new JSONObject();
 			jsonObject.put("courses", jsonArray);
