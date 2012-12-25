@@ -1,31 +1,32 @@
 package gradesys;
 
-import javax.persistence.EntityManager;
-
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
-import com.google.appengine.api.datastore.Transaction;
 
-public class Course {
+public class Instructor {
 
-	private static final String entityKind = "course";
-	private static final String namePropertyName = "name";
+	private static final String entityKind = "Instructor";
+	
+	private static final String namePropertyName = "userId";
 
 	private Entity entity = null;
 
-	private Course(Entity entity) {
+	private Instructor(Entity entity) {
 		this.entity = entity;
 	}
 
 	public Long getID() {
 		return (Long) entity.getKey().getId();
+	}
+	
+	public Key getKey() {
+		return entity.getKey();
 	}
 
 	public String getName() {
@@ -44,39 +45,18 @@ public class Course {
 		deleteEntityByName(name);
 	}
 	
-	public static Course create(String name) throws CourseAlreadyExistsException {
-		return new Course(createEntity(name));
+	public static Instructor create(String name) throws CourseAlreadyExistsException {
+		return new Instructor(createEntity(name));
 	}
 
-	public static Course getByName(String name) {
+	public static Instructor getByName(String name) {
 		Entity entity = getEntityByName(name);
 		if (entity == null) {
 			return null;
 		} else {
-			return new Course(entity);
+			return new Instructor(entity);
 		}
 	}
-	
-	public static Course getByCourseId(Long courseId) throws EntityNotFoundException {
-		//Key key = KeyFactory.createKey(Course.class.getSimpleName(), courseId);
-		Entity entity = getEntityByKey(courseId);
-		if (entity == null) {
-			return null;
-		} else {
-			return new Course(entity);
-		}
-	}
-	
-	// Helper function that runs inside or outside a transaction.
-		public static Entity getEntityByKey(Long id) throws EntityNotFoundException {
-			/*Query query = new Query(entityKind);
-			Query.Filter filter = new FilterPredicate(Entity.KEY_RESERVED_PROPERTY, FilterOperator.EQUAL, id); 
-			query.setFilter(filter);*/
-			Key key = KeyFactory.createKey("course", id);
-			
-			DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-			return datastore.get(key);		
-		}
 
 	// Helper function that runs inside or outside a transaction.
 	private static Entity getEntityByName(String name) {

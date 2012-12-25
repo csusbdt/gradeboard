@@ -4,53 +4,58 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>jQuery Mobile: Demos and Documentation</title>
-	<link rel="stylesheet"  href="../css/jquery.mobile-1.2.0.css" />
-	<!-- <link rel="stylesheet" href="docs/_assets/css/jqm-docs.css" /> -->
-	
+	<link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
 	<script src="../js/jquery.js"></script>
-	<!-- <script src="docs/_assets/js/jqm-docs.js"></script> -->
-	<script src="../js/jquery.mobile-1.2.0.js"></script>
-		
+	<script src="../js/bootstrap.min.js"></script>
 	<script type="text/javascript">
 		
-		
+		$(document).ready(function() {
+			$.ajax({
+			  type: 'GET',
+			  url: "/instructor/controller",
+			  data: {op   : 'listCourses'},
+			  dataType: "json"
+			}).done(function(data) {
+			      if (data.err) {
+						  alert(data.err);
+			      } else {
+			    	  $("#main > li").remove();
+			    	  $.each(data.courses, function(i,course){
+			    		  //alert(course);
+			              
+			              var $li = $('<li class="active"></li>');
+			              var $a = $('<a href="CourseOperations.html"></a>');
+			              $('#main').append($li);
+			              $a.html(course);
+			              $li.append($a);
+			            });
+					  //alert(data);
+	  				  } 
+			  }).fail( function(jqXHR, textStatus) {
+			  	consol.log(textStatus);
+			  });
+		});	
+	
 	</script>
 	
 </head>
 <body>
 
- 
-<div id="courseList" data-role="page">
-	<div data-role="header">
-		Course List	
+	<div class="navbar">
+		<div class="navbar-inner">
+			<a class="brand" href="#">Course List</a>
+			<!-- <ul class="nav">
+			<li class="active"><a href="#">Home</a></li>
+			<li><a href="#">Link</a></li>
+			<li><a href="#">Link</a></li>
+		</ul> -->
+		</div>
 	</div>
-	
- 	<div id="main" data-role="content">
-		<p>
-			<a href="CourseOperations.html" data-role="button" data-transition="slide">Algorithm Analysis</a> 
-		</p>
-		
-		<p>
-			<a href="CourseOperations.html" data-role="button" data-transition="slide">Algorithm Analysis</a> 
-		</p>
-		
-		<p>
-			<a href="CourseOperations.html" data-role="button" data-transition="slide">Algorithm Analysis</a> 
-		</p>
-		
-		<p>
-			<a href="CourseOperations.html" data-role="button" data-transition="slide">Algorithm Analysis</a> 
-		</p>
-			
-	</div>
-	
-	<div data-role="footer">
-		<p>
-			<a href="CourseAdd.html" data-role="button" data-transition="slide">Add</a> 
-		</p>	
-	</div>
-	
-</div>
+
+	<ul id="main" class="nav nav-pills nav-stacked">
+		<!-- <li class="active"><a href="CourseOperations.html">Algorithm Analysis</a></li> -->
+	</ul>
+
 </body>
 
 
