@@ -24,7 +24,7 @@
 
 </head>
 <body>
-<<<<<<< HEAD
+
    <div id="courseOperations" data-role="page">
       <div data-role="header">
          <a href="index.html" id="back" data-back="true"
@@ -90,57 +90,5 @@
          });
          </script>
    </div>
-=======
-<div id="courseOperations" data-role="page">
-	<div data-role="header">
-		<a href="index.html" data-icon="back">Back</a>
-		<h1>Course</h1>
-		<!-- <a href="index.html" data-icon="check">Save</a> -->		
-	</div>
-	
- 	<div data-role="content">
- 		
-		<div data-role="fieldcontain">
-   			<label for="courseName">Enter Course Name:</label>
-   			<input type="text" name="courseName" id="courseName" />
-		</div>
-				
-		<button id="saveLink">Save</button>
-		
-	</div>
-	
-	<div data-role="footer">
-		Footer	
-	</div>
-	
-	<script type="text/javascript">
-		
-		$(document).bind('pageinit', function() {
-			
-			$('#saveLink').click( function() {
-				//alert($('#courseName').val());
-				$.ajax({
-				  type: 'POST',
-				  url: "/instructor/controller",
-				  data: {name : $('#courseName').val(),
-					     op   : 'courseAdd'},
-				  success: function(data) {
-				      if (data.err) {
-  						  alert(data.err);
-				      } else {
-    					  alert('Added Course');
-       				  }
-				  },
-				  error: function() {
-				  	consol.log('error');
-				  },
-				  dataType: "json"
-				});
-			});
-		});		
-		
-	</script>	
-</div>	
->>>>>>> b8fdd260c2af41e4792b7942344ba051b1f0a7e9
 </body>
 </html>
