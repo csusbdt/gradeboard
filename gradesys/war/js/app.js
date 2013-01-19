@@ -102,3 +102,20 @@ app.controller.courseList = {};
    }
 })();
 
+(function() {
+   app.view.displayError = function(error) {
+     var $errorPopup = $('#errorPopup');
+     if($errorPopup.length === 0) {
+        $errorPopup = $('div id="popupError" data-role="popup"><a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="delete" data-iconpos="notext" class="ui-btn-right">Close</a><div id="popupErrorMsg">Test</div>');
+        $('div[data-role="page"]').prepend($errorPopup);
+        
+        $('body').trigger('create');
+     }
+     console.log($('#popupErrorMsg'));
+     //console.log(error);
+     
+     $errorPopup.popup('open');
+     
+   }
+})();
+

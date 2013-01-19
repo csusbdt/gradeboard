@@ -17,7 +17,7 @@
 
 
 <script type="text/javascript">
-   $(document).bind("mobileinit", function() {
+   $(document).bind("mobileinit", function() {      
       $.mobile.loadingMessageTextVisible = true;
    });
 </script>
@@ -26,6 +26,7 @@
 <body>
 
    <div id="courseOperations" data-role="page">
+   
       <div data-role="header">
          <a href="index.html" id="back" data-back="true"
             data-icon="back" data-transition="slide"
@@ -34,7 +35,12 @@
       </div>
 
       <div data-role="content">
-
+      
+         <!-- <div id="popupError" data-role="popup">
+            <a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="delete" data-iconpos="notext" class="ui-btn-right">Close</a>
+            <div id="popupErrorMsg">Test</div>
+         </div> -->
+         
          <form id="frmAddCourse">
             <div data-role="fieldcontain">
                <label for="courseName">Enter Course Name:</label> <input
@@ -67,10 +73,11 @@
                      dataType : "json"
                   }).done(function(data) {
                      if (data.error) {
-                        alert(data.error);
+                        console.log(data.error);
                         $.mobile.hidePageLoadingMsg();
-                     } else {
-                        alert('Added Course');
+                        //$('#popupError').popup('open');
+                        app.view.displayError(data.error);                        
+                     } else {                        
                         $.mobile.hidePageLoadingMsg();
                         app.model.courseList.update(data);
                         app.view.courseList.render();
