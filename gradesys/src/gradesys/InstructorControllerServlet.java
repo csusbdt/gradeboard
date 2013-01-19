@@ -2,20 +2,34 @@ package gradesys;
 
 import java.io.IOException;
 import java.util.List;
+<<<<<<< HEAD
+import java.util.logging.Level;
+import java.util.logging.Logger;
+=======
+>>>>>>> b8fdd260c2af41e4792b7942344ba051b1f0a7e9
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+<<<<<<< HEAD
+import com.google.appengine.api.datastore.EntityNotFoundException;
+import com.google.appengine.api.users.User;
+import com.google.appengine.api.users.UserService;
+import com.google.appengine.api.users.UserServiceFactory;
+=======
 import com.google.appengine.api.users.User;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
 import com.google.appengine.labs.repackaged.org.json.JSONArray;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
+>>>>>>> b8fdd260c2af41e4792b7942344ba051b1f0a7e9
 
 @SuppressWarnings("serial")
-public class InstructorControllerServlet extends HttpServlet {	
+public class InstructorControllerServlet extends HttpServlet {
+	
+	 private static final Logger logger = Logger.getLogger(InstructorControllerServlet.class.getName());
 
 	private String courseAdd(HttpServletRequest req, HttpServletResponse resp) {
 		String courseName = req.getParameter("name");
@@ -29,11 +43,38 @@ public class InstructorControllerServlet extends HttpServlet {
 				Auth.create(course.getID(), instructor.getKey());		
 			} else {
 				Auth.create(course.getID(), instructor.getKey());	
+<<<<<<< HEAD
+			}
+
+			List<Course> courses = Auth.getCoursesByInstructor(instructor.getKey());
+			return Util.getCoursesJson(courses);
+=======
 			}			
+>>>>>>> b8fdd260c2af41e4792b7942344ba051b1f0a7e9
 		} catch (CourseAlreadyExistsException e) {
-			return "{ \"err\": \"Course name already taken.\" }";
-		}
-		return "{}";	
+			return "{ \"error\": \"Course name already taken.\" }";
+		} catch (EntityNotFoundException e) {
+			logger.log(Level.SEVERE, "Error getting courses", e);
+			return "{}";
+		} catch (Exception e) {
+			logger.log(Level.SEVERE, "Error adding course", e);
+			return "{}";
+		}	
+	}
+	
+	private String listCourses(HttpServletRequest req, HttpServletResponse resp) {
+		try {
+			UserService userService = UserServiceFactory.getUserService();
+			User user = userService.getCurrentUser();
+			Instructor instructor = Instructor.getByName(user.getUserId());
+			if(instructor == null) {
+				return "{}";
+			}
+			List<Course> courses = Auth.getCoursesByInstructor(instructor.getKey());
+			return Util.getCoursesJson(courses);
+		} catch (Exception e) {
+			return "{ \"err\": \"Unable to list courses.\" }";
+		}	
 	}
 	
 	private String listCourses(HttpServletRequest req, HttpServletResponse resp) {

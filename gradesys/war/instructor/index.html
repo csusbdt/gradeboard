@@ -1,6 +1,103 @@
 <!DOCTYPE html>
 <html>
 <head>
+<<<<<<< HEAD
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>jQuery Mobile: Demos and Documentation</title>
+<link rel="stylesheet" href="../css/jquery.mobile-1.2.0.css" />
+<!-- <link rel="stylesheet" href="docs/_assets/css/jqm-docs.css" /> -->
+
+<script src="../js/jquery.js"></script>
+<!-- <script src="docs/_assets/js/jqm-docs.js"></script> -->
+<script src="../js/jquery.mobile-1.2.0.js"></script>
+<script src="../js/jquery.validate.min.js"></script>
+<script src="../js/app.js"></script>
+
+<script type="text/javascript">
+   $(document).bind("mobileinit", function() {
+      $.mobile.loadingMessageTextVisible = true;
+   });
+
+   $(document).bind("pageinit", function() {
+      $.mobile.showPageLoadingMsg("a", "Loading Course List....");
+      app.controller.courseList.init();
+      $.mobile.hidePageLoadingMsg();  
+      /*$.mobile.showPageLoadingMsg("a", "Loading Course List....");
+      $.ajax({
+       type : 'GET',
+       url : "/instructor/controller",
+       data : {
+         op : 'listCourses'
+       },
+       dataType : "json"
+      }).done(function(data) {
+       if (data.err) {
+         alert(data.err);
+       } else {
+         $("#main > p").remove();
+         $.each(data.courses, function(i, course) {
+           var $p = $('<p></p>');
+           var $a = $('<a data-role="button" data-transition="slide" href="CourseOperations.html"></a>');
+           $('#main').append($p);
+           $a.html(course);
+           $p.append($a);
+         });
+         $('#main').trigger('create');
+         $.mobile.hidePageLoadingMsg();
+         
+       }
+      }).fail(function(jqXHR, textStatus) {
+       consol.log(textStatus);
+       $.mobile.hidePageLoadingMsg();
+      });*/
+   });
+</script>
+
+</head>
+<body>
+
+
+   <div id="courseList" data-role="page">
+      <div data-role="header">Course List</div>
+
+      <div id="main" data-role="content">
+         <p>
+            <a href="CourseOperations.html" data-role="button"
+               data-transition="slide"
+            >Algorithm Analysis</a>
+         </p>
+
+         <p>
+            <a href="CourseOperations.html" data-role="button"
+               data-transition="slide"
+            >Algorithm Analysis</a>
+         </p>
+
+         <p>
+            <a href="CourseOperations.html" data-role="button"
+               data-transition="slide"
+            >Algorithm Analysis</a>
+         </p>
+
+         <p>
+            <a href="CourseOperations.html" data-role="button"
+               data-transition="slide"
+            >Algorithm Analysis</a>
+         </p>
+
+      </div>
+
+      <div data-role="footer">
+         <p>
+            <a href="CourseAdd.html" data-role="button"
+               data-transition="slide"
+            >Add</a>
+         </p>
+      </div>
+
+   </div>
+=======
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>jQuery Mobile: Demos and Documentation</title>
@@ -51,6 +148,7 @@
 		<!-- <li class="active"><a href="CourseOperations.html">Algorithm Analysis</a></li> -->
 	</ul>
 
+>>>>>>> b8fdd260c2af41e4792b7942344ba051b1f0a7e9
 </body>
 
 
