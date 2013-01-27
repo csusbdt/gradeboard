@@ -28,4 +28,12 @@ public class Util {
 		jsonObject.put("courses", jsonArray);
 		return jsonObject.toString();
 	}
+	
+	public static String getCourseJson(String course) throws JSONException {
+		if(course == null || course.length() == 0)
+			return "{}";
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("course", course);
+		return jsonObject.toString();
+	}
 }

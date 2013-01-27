@@ -23,7 +23,7 @@ public class InstructorControllerServlet extends HttpServlet {
 	
 	 private static final Logger logger = Logger.getLogger(InstructorControllerServlet.class.getName());
 
-	private String courseAdd(HttpServletRequest req, HttpServletResponse resp) {
+	private String addCourse(HttpServletRequest req, HttpServletResponse resp) {
 		String courseName = req.getParameter("name");
 		try {
 			Course course = Course.create(courseName);
@@ -46,6 +46,30 @@ public class InstructorControllerServlet extends HttpServlet {
 			return "{}";
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, "Error adding course", e);
+			return "{}";
+		}	
+	}
+	
+	private String saveCourse(HttpServletRequest req, HttpServletResponse resp) {
+		String courseName = req.getParameter("name");
+		try {
+			UserService userService = UserServiceFactory.getUserService();
+			User user = userService.getCurrentUser();
+			Instructor instructor = Instructor.getByName(user.getUserId());
+			if(instructor == null) {
+				return "{}";		
+			}
+			Course.save(courseName);
+			List<Course> courses = Auth.getCoursesByInstructor(instructor.getKey());
+			return Util.getCoursesJson(courses);			
+		} catch (CourseNotFoundException e) {
+			logger.log(Level.SEVERE, "Error getting courses", e);
+			return "{ \"error\": \"Course that you are saving does not exists.\" }";
+		} catch (EntityNotFoundException e) {
+			logger.log(Level.SEVERE, "Error getting courses", e);
+			return "{ \"error\": \"Course that you are saving does not exists.\" }";
+		} catch (Exception e) {
+			logger.log(Level.SEVERE, "Error saving course", e);
 			return "{}";
 		}	
 	}
@@ -81,7 +105,10 @@ public class InstructorControllerServlet extends HttpServlet {
 		String operation = req.getParameter("op");
 		if(operation != null) { // !Util.isEmpty(operation)) {
 			if(operation.equalsIgnoreCase("courseadd")) {
-				resp.getWriter().write(courseAdd(req, resp));
+				resp.getWriter().write(addCourse(req, resp));
+			}
+			if(operation.equalsIgnoreCase("coursesave")) {
+				resp.getWriter().write(saveCourse(req, resp));
 			}
 		} else {
 			resp.getWriter().print("{ \"err\": \"unknown operation\" }");

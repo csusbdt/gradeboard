@@ -5,6 +5,7 @@ var app = {
    util : {}
 };
 
+/*** Course List ****/
 app.model.courseList = {};
 
 (function() {
@@ -86,6 +87,56 @@ app.controller.courseList = {};
   
 })(jQuery, app.model.courseList, app.view.courseList);
 
+
+/***** Course Operations *****/
+
+app.view.courseOperations = {};
+
+(function() {
+   var courses;
+
+   app.view.courseOperations.render = function(coursename) {
+      $('#title').empty();
+      $('#title').append(params);
+      $('#courseName').val(params);
+      $('#header').trigger('create');
+   };
+      
+})();
+
+app.controller.courseOperations = {};
+
+(function(jQuery, mcourseList, vcourseOperations) {
+
+   app.controller.courseOperations.saveCourse = function() {
+      var newcoursename = $('#courseName').val();
+      $.ajax({
+            type : 'POST',
+            url : "/instructor/controller",
+            data : {
+               name : newcoursename,
+               op : 'coursesave'
+            },
+            dataType : "json"
+      }).done(function(data) {
+         if (data.err) {
+            alert(data.err);
+         } else {
+            mcourseList.update(data);
+            vcourseOperations.render(newcoursename);
+         }
+      }).fail(function(jqXHR, textStatus) {
+            consol.log(textStatus);
+            $.mobile.hidePageLoadingMsg();
+      });
+   };
+   
+  
+})(jQuery, app.model.courseList, app.view.courseOperations);
+
+
+
+/****** Utility ******/
 (function() {
 
    app.util.getUrlVars = function() {
@@ -103,19 +154,9 @@ app.controller.courseList = {};
 })();
 
 (function() {
-   app.view.displayError = function(error) {
-     var $errorPopup = $('#errorPopup');
-     if($errorPopup.length === 0) {
-        $errorPopup = $('div id="popupError" data-role="popup"><a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="delete" data-iconpos="notext" class="ui-btn-right">Close</a><div id="popupErrorMsg">Test</div>');
-        $('div[data-role="page"]').prepend($errorPopup);
-        
-        $('body').trigger('create');
-     }
-     console.log($('#popupErrorMsg'));
-     //console.log(error);
-     
-     $errorPopup.popup('open');
-     
+   app.view.displayError = function(error) {     
+     $('#popupErrorMsg').html(error);         
+     $('#popupError').popup('open');
    }
 })();
 

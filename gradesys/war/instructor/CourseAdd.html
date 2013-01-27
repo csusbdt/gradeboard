@@ -25,7 +25,7 @@
 </head>
 <body>
 
-   <div id="courseOperations" data-role="page">
+   <div id="courseAdd" data-role="page">
    
       <div data-role="header">
          <a href="index.html" id="back" data-back="true"
@@ -34,12 +34,13 @@
          <h1>Course</h1>
       </div>
 
-      <div data-role="content">
+      <div id="content" data-role="content">
       
-         <!-- <div id="popupError" data-role="popup">
-            <a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="delete" data-iconpos="notext" class="ui-btn-right">Close</a>
-            <div id="popupErrorMsg">Test</div>
-         </div> -->
+         <div id="popupError" data-role="popup" data-position-to="#content">
+            <a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="delete" data-iconpos="notext" 
+               class="ui-btn-right">Close</a>
+               <p id="popupErrorMsg"></p>
+         </div>
          
          <form id="frmAddCourse">
             <div data-role="fieldcontain">
@@ -57,7 +58,17 @@
 
       <script type="text/javascript">
                     
-         $('#courseOperations').die().live('pageinit', function() {
+         $('#courseAdd').die().live('pageinit', function() {
+            
+            $('#back').click(function() {
+               app.view.courseList.render();
+               $.mobile.changePage("index.html",
+                  {
+                     allowSamePageTransition : true,
+                     transition : 'none',
+                     reloadPage : false
+                  });
+            });
             
             $('#saveLink').click(function() {
                if ($("#frmAddCourse").valid()) {
@@ -89,7 +100,7 @@
                            });
                      }
                    }).fail(function(jqXHR, textStatus) {
-                        consol.log(textStatus);
+                        console.log(textStatus);
                         $.mobile.hidePageLoadingMsg();
                    });
                }
