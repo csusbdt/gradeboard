@@ -5,6 +5,21 @@ var app = {
    util : {}
 };
 
+/*** App view for all the classes ***/
+
+(function() {
+   var courses;
+   
+   app.view.transfer = function(toPage) {      
+      $.mobile.changePage(toPage,
+      {
+         allowSamePageTransition : true,
+         transition : 'none',
+         reloadPage : false
+      });
+   }   
+})();
+
 /*** Course List ****/
 app.model.courseList = {};
 
@@ -40,8 +55,9 @@ app.view.courseList = {};
       $("#main > p").remove();
       $.each(courses.courses, function(i, course) {
             var $p = $('<p></p>');
-            var query = "CourseOperations.html?courseName=" + course;
-            var $a = $('<a data-role="button" data-transition="slide" href="' + query + '"></a>');            
+            var query = "CourseOperations.html"; //?courseName=" + course;
+            var onclick = "app.model.courseOperations.update('" + course + "');app.view.transfer('" + query + "')";
+            var $a = $('<a data-role="button" data-transition="slide" onclick="' + onclick + '" href="' + query + '"></a>');            
             $('#main').append($p);
             $a.html(course);
             $p.append($a);
@@ -89,16 +105,30 @@ app.controller.courseList = {};
 
 
 /***** Course Operations *****/
+app.model.courseOperations = {};
+
+(function() {
+   
+   var courseName;
+   
+   app.model.courseOperations.update = function(data) {
+      courseName = data;
+    };
+    
+    app.model.courseOperations.get = function() {
+       return courseName;
+    };
+})();
 
 app.view.courseOperations = {};
 
 (function() {
    var courses;
-
+   
    app.view.courseOperations.render = function(coursename) {
       $('#title').empty();
-      $('#title').append(params);
-      $('#courseName').val(params);
+      $('#title').append(coursename);
+      $('#courseName').val(coursename);
       $('#header').trigger('create');
    };
       
@@ -109,12 +139,14 @@ app.controller.courseOperations = {};
 (function(jQuery, mcourseList, vcourseOperations) {
 
    app.controller.courseOperations.saveCourse = function() {
-      var newcoursename = $('#courseName').val();
+      var newCourseName = $('#courseName').val();
+      var oldCourseName = app.model.courseOperations.get();
       $.ajax({
             type : 'POST',
             url : "/instructor/controller",
             data : {
-               name : newcoursename,
+               oldCourseName : oldCourseName,
+               newCourseName : newCourseName,
                op : 'coursesave'
             },
             dataType : "json"
@@ -123,7 +155,8 @@ app.controller.courseOperations = {};
             alert(data.err);
          } else {
             mcourseList.update(data);
-            vcourseOperations.render(newcoursename);
+            app.model.courseOperations.update(newCourseName);
+            vcourseOperations.render(newCourseName);
          }
       }).fail(function(jqXHR, textStatus) {
             consol.log(textStatus);
@@ -134,6 +167,38 @@ app.controller.courseOperations = {};
   
 })(jQuery, app.model.courseList, app.view.courseOperations);
 
+/*** Course View ***/
+
+app.model.courseView = {};
+
+(function() {
+   
+   var courseName;
+   
+   app.model.courseView.update = function(data) {
+      courseName = data;
+    };
+    
+    app.model.courseView.get = function() {
+       return courseName;
+    };
+})();
+
+app.view.courseView = {};
+
+(function() {
+   var courses;
+   
+   app.view.courseView.render = function(coursename) {
+      $('#title').empty();
+      $('#title').append(coursename);
+      $('#courseName').val(coursename);
+      $('#header').trigger('create');
+   };
+      
+})();
+
+app.controller.courseView = {};
 
 
 /****** Utility ******/

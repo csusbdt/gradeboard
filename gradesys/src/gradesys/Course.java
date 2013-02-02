@@ -47,15 +47,15 @@ public class Course {
 		return new Course(createEntity(name));
 	}
 
-	public static Course save(String name) throws Exception {
-		Course course = getByName(name);
+	public static Course save(String oldCourseName, String newCourseName) throws Exception {
+		Course course = getByName(oldCourseName);
 		if (course == null) {
 			throw new CourseNotFoundException();
 		} else {
 			DatastoreService datastore = DatastoreServiceFactory
 					.getDatastoreService();
 			Transaction txn = datastore.beginTransaction();
-			course.setName(name);
+			course.setName(newCourseName);
 			datastore.put(course.entity);
 			txn.commit();
 			return course;

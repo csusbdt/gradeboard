@@ -20,7 +20,9 @@
 <body>
 <div id="viewCourse" data-role="page">
 	<div data-role="header">
-		Course
+	  <a id="cvback" data-icon="back" data-transition="slide"
+      >Back</a>
+      <h1 id="title"></h1>
 	</div>
 	
  	<div data-role="content">
@@ -43,7 +45,35 @@
 		Footer	
 	</div>
 	
+      <script type="text/javascript">
+   
+      $('#viewCourse').die().live('pageinit', function() {
+         //console.log("pageinitialized");
+         $('#cvback').click(function() {
+            console.log("back clicked");
+            app.view.courseList.render();
+            $.mobile.changePage("CourseOperations.html",
+               {
+                  allowSamePageTransition : true,
+                  transition : 'none',
+                  reloadPage : false
+               });
+         });        
+        
+      });
+      
+      $('#viewCourse').live("pagebeforeshow", function() {
+           //var params = app.util.getUrlVars()["courseName"];
+           var title = app.model.courseView.get();
+           console.log(title);
+           $('#title').empty();
+           $('#title').append(title);
+           $('#courseName').val(title);
+           $('#header').trigger('create');
+      });
+   </script>
 </div>
+
 </body>
 
 </html>

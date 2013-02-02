@@ -38,8 +38,7 @@
      </form>
 	</div>
 	
-	<div data-role="footer">     
-		<a href="CourseView.html" data-icon="view" data-role="button" data-transition="slide">View</a>
+	<div data-role="footer">
       <a href="CourseView.html" data-icon="edit" data-role="button" data-transition="slide">Edit</a>
       <a href="Grades.html" data-icon="grid" data-role="button" data-transition="slide">Grade</a>
       <a href="CourseView.html" data-icon="delete" data-role="button" data-transition="slide">Delete</a> 
@@ -60,6 +59,12 @@
                });
          });
          
+         $('#copview').click(function() {
+            //console.log("save clicked");
+            app.model.courseView.update(app.model.courseOperations.get());
+            app.view.transfer('courseView.html');
+         });
+         
          $('#copsave').click(function() {
             //console.log("save clicked");
             app.controller.courseOperations.saveCourse();
@@ -68,10 +73,11 @@
       });
       
       $('#courseOperations').live("pagebeforeshow", function() {
-           var params = app.util.getUrlVars()["courseName"];
+           //var params = app.util.getUrlVars()["courseName"];
+           var title = app.model.courseOperations.get();
            $('#title').empty();
-           $('#title').append(params);
-           $('#courseName').val(params);
+           $('#title').append(title);
+           $('#courseName').val(title);
            $('#header').trigger('create');
             
          });

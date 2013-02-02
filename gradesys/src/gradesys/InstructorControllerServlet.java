@@ -51,7 +51,8 @@ public class InstructorControllerServlet extends HttpServlet {
 	}
 	
 	private String saveCourse(HttpServletRequest req, HttpServletResponse resp) {
-		String courseName = req.getParameter("name");
+		String oldCourseName = req.getParameter("oldCourseName");
+		String newCourseName = req.getParameter("newCourseName");
 		try {
 			UserService userService = UserServiceFactory.getUserService();
 			User user = userService.getCurrentUser();
@@ -59,7 +60,7 @@ public class InstructorControllerServlet extends HttpServlet {
 			if(instructor == null) {
 				return "{}";		
 			}
-			Course.save(courseName);
+			Course.save(oldCourseName, newCourseName);
 			List<Course> courses = Auth.getCoursesByInstructor(instructor.getKey());
 			return Util.getCoursesJson(courses);			
 		} catch (CourseNotFoundException e) {
@@ -107,7 +108,7 @@ public class InstructorControllerServlet extends HttpServlet {
 			if(operation.equalsIgnoreCase("courseadd")) {
 				resp.getWriter().write(addCourse(req, resp));
 			}
-			if(operation.equalsIgnoreCase("coursesave")) {
+			if(operation.equalsIgnoreCase("coursesave")) {				
 				resp.getWriter().write(saveCourse(req, resp));
 			}
 		} else {
