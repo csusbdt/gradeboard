@@ -17,31 +17,39 @@
 
 
 <script type="text/javascript">
-   $(document).bind("mobileinit", function() {      
+   $(document).bind("mobileinit", function() {
       $.mobile.loadingMessageTextVisible = true;
    });
+
+
 </script>
 
 </head>
 <body>
 
    <div id="courseAdd" data-role="page">
-   
+
       <div data-role="header">
-         <a href="index.html" id="back" data-back="true"
+         <a id="caback" data-back="true"
             data-icon="back" data-transition="slide"
          >Back</a>
-         <h1>Course</h1>
+         <h1>GradeBoard</h1>
+         <a href="index.html" class="ui-btn-right" id="calogout"data-transition="slide"
+         >Logout</a>
+      </div>
+
+      <div class="ui-bar ui-bar-a" style="text-align:center;">
+	           <h3 style="margin-top: 8px;  float: center;">Add Course</h3>
+
       </div>
 
       <div id="content" data-role="content">
-      
          <div id="popupError" data-role="popup" data-position-to="#content">
-            <a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="delete" data-iconpos="notext" 
+            <a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="delete" data-iconpos="notext"
                class="ui-btn-right">Close</a>
                <p id="popupErrorMsg"></p>
          </div>
-         
+
          <form id="frmAddCourse">
             <div data-role="fieldcontain">
                <label for="courseName">Enter Course Name:</label> <input
@@ -57,19 +65,14 @@
       </div>
 
       <script type="text/javascript">
-                    
+
          $('#courseAdd').die().live('pageinit', function() {
-            
-            $('#back').click(function() {
+
+            $('#caback').click(function() {
                app.view.courseList.render();
-               $.mobile.changePage("index.html",
-                  {
-                     allowSamePageTransition : true,
-                     transition : 'none',
-                     reloadPage : false
-                  });
+               app.view.transfer("index.html");
             });
-            
+
             $('#saveLink').click(function() {
                if ($("#frmAddCourse").valid()) {
                   var courseName = $('#courseName').val();
@@ -87,17 +90,12 @@
                         console.log(data.error);
                         $.mobile.hidePageLoadingMsg();
                         //$('#popupError').popup('open');
-                        app.view.displayError(data.error);                        
-                     } else {                        
+                        app.view.displayError(data.error);
+                     } else {
                         $.mobile.hidePageLoadingMsg();
                         app.model.courseList.update(data);
                         app.view.courseList.render();
-                        $.mobile.changePage("index.html",
-                           {
-                              allowSamePageTransition : true,
-                              transition : 'none',
-                              reloadPage : false
-                           });
+                        app.view.transfer("index.html");
                      }
                    }).fail(function(jqXHR, textStatus) {
                         console.log(textStatus);

@@ -22,79 +22,44 @@
    $(document).bind("pageinit", function() {
       $.mobile.showPageLoadingMsg("a", "Loading Course List....");
       app.controller.courseList.init();
-      $.mobile.hidePageLoadingMsg();  
-      /*$.mobile.showPageLoadingMsg("a", "Loading Course List....");
-      $.ajax({
-       type : 'GET',
-       url : "/instructor/controller",
-       data : {
-         op : 'listCourses'
-       },
-       dataType : "json"
-      }).done(function(data) {
-       if (data.err) {
-         alert(data.err);
-       } else {
-         $("#main > p").remove();
-         $.each(data.courses, function(i, course) {
-           var $p = $('<p></p>');
-           var $a = $('<a data-role="button" data-transition="slide" href="CourseOperations.html"></a>');
-           $('#main').append($p);
-           $a.html(course);
-           $p.append($a);
-         });
-         $('#main').trigger('create');
-         $.mobile.hidePageLoadingMsg();
-         
-       }
-      }).fail(function(jqXHR, textStatus) {
-       consol.log(textStatus);
-       $.mobile.hidePageLoadingMsg();
-      });*/
    });
 </script>
 
 </head>
-<body>  
+<body>
 
    <div id="courseList" data-role="page">
-      <div data-role="header">Course List</div>
+      <div data-role="header" data-position="inline">
+         <!--<a href="index.html" id="back" data-back="true"
+            data-icon="back" data-transition="slide"
+         >Back</a> -->
+         <h1> GradeBoard </h1>
+          <a class="ui-btn-right" id="logout"data-transition="slide"
+         >Logout</a>
+      </div>
+
+      <div class="ui-bar ui-bar-a" style="text-align:center;">
+         <h3 style="margin-top: 8px;  float: center;">Courses</h3>
+      </div>
 
       <div id="main" data-role="content">
-         <p>
-            <a href="CourseOperations.html" data-role="button"
-               data-transition="slide"
-            >Algorithm Analysis</a>
-         </p>
-
-         <p>
-            <a href="CourseOperations.html" data-role="button"
-               data-transition="slide"
-            >Algorithm Analysis</a>
-         </p>
-
-         <p>
-            <a href="CourseOperations.html" data-role="button"
-               data-transition="slide"
-            >Algorithm Analysis</a>
-         </p>
-
-         <p>
-            <a href="CourseOperations.html" data-role="button"
-               data-transition="slide"
-            >Algorithm Analysis</a>
-         </p>
-
       </div>
-
       <div data-role="footer">
-         <p>
-            <a href="CourseAdd.html" data-role="button"
+
+            <a href="CourseAdd.html" data-icon="edit" data-role="button"
                data-transition="slide"
-            >Add</a>
-         </p>
+            >Add Course</a>
+
       </div>
 
+   <script type="text/javascript">
+      //app.view.courseList.render();
+      $('#courseList').die().live("pageinit", function() {
+         $('#logout').click(function() {
+            app.logout();
+		   });
+      });
+   </script>
    </div>
 </body>
 </html>

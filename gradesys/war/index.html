@@ -1,1 +1,102 @@
-Hi
+<!DOCTYPE html>
+<html>
+<head>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>jQuery Mobile: Demos and Documentation</title>
+<link rel="stylesheet" href="/css/jquery.mobile-1.2.0.css" />
+<!-- <link rel="stylesheet" href="docs/_assets/css/jqm-docs.css" /> -->
+
+<script src="/js/jquery.js"></script>
+<!-- <script src="docs/_assets/js/jqm-docs.js"></script> -->
+<script src="/js/jquery.mobile-1.2.0.js"></script>
+<script src="/js/jquery.validate.min.js"></script>
+<script src="/js/app.js"></script>
+
+<style>
+* {
+  padding: 0;
+  margin: 0;
+}
+.fit {
+  max-width: 100%;
+  max-height: 100%;
+}
+.center {
+  display: block;
+  margin: auto;
+}
+
+</style>
+<script src="http://code.jquery.com/jquery-latest.js"></script>
+<script type="text/javascript" language="JavaScript">
+
+   function responsiveImage(hi_res) {
+       if (hi_res) {
+           $('img[data-src-hi]').each(function (index, element) {
+               $(this).attr("src",$(this).attr('data-src-hi'));
+           });
+       } else {
+           //output lo-res images
+           $('img[data-src-lo]').each(function (index, element) {
+               $(this).attr("src",$(this).attr('data-src-lo'));
+           });
+       }
+   }
+
+   $(function(){
+       var hi_res = false;
+       var max_width = 480;
+
+       if($(window).width()>max_width){
+           hi_res = true;
+       }
+       responsiveImage(hi_res);
+
+       $(window).resize(function() {
+           if($(window).width()>max_width){
+               hi_res = true;
+           }else{
+               hi_res = false;
+           }
+           responsiveImage(hi_res);
+       });
+
+   });
+
+   $(document).ready(function() {
+      $width = $('#pagecontent').width();
+      $height = $('#pagecontent').height();
+
+      $('#login').click(function() {
+         app.login();
+      });
+   });
+
+</script>
+</head>
+<body>
+
+   <div id="courseList" data-role="page" >
+      <div data-role="header" data-position="inline">
+         <h1> GradeBoard </h1>
+          <a id="login"data-transition="slide" class="ui-btn-right"
+         >Login</a>
+      </div>
+
+     <div id="pagecontent" data-role="content" style="padding:0px;" >
+           <!-- <div class="center fit">
+            <img id="logo" class="banner" style="width:100%;height:auto;"
+               src="/css/images/backgroundimage.png"
+               alt="splash"
+            />
+          </div>  -->
+         <img data-src-hi="/css/images/background.jpg" style="width:100%;height:auto;" data-src-lo="/css/images/backgroundimage.png" src="" />
+      </div>
+
+      <div data-role="footer" style="min-height: 45px">
+      </div>
+   </div>
+</body>
+</html>

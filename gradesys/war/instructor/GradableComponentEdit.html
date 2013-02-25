@@ -6,49 +6,56 @@
 	<title>jQuery Mobile: Demos and Documentation</title>
 	<link rel="stylesheet"  href="../css/jquery.mobile-1.2.0.css" />
 	<!-- <link rel="stylesheet" href="docs/_assets/css/jqm-docs.css" /> -->
-	
+
 	<script src="../js/jquery.js"></script>
 	<!-- <script src="docs/_assets/js/jqm-docs.js"></script> -->
 	<script src="../js/jquery.mobile-1.2.0.js"></script>
-		
+
 	<script type="text/javascript">
-		
-		
+
+
 	</script>
-	
+
 </head>
 <body>
 <div id="student" data-role="page">
 	<div data-role="header">
-		Edit Gradable Component
+		<a href="index.html" id="back" data-back="true"
+										 data-icon="back" data-transition="slide"
+							 >Back</a>
+							 <h1> GradeBoard </h1>
+							  <a href="index.html" class="ui-btn-right" id="logout"data-transition="slide"
+							 >Logout</a>
+						  </div>
+
+						  <div class="ui-bar ui-bar-a" style="text-align:center;">
+			<h3 style="margin-top: 8px;  float: center;">Edit Gradable Component</h3>
+
 	</div>
-	
+
  	<div data-role="content">
- 		
+		<legend style="text-align:center;">Gradable Componet 1</legend>
  		<div data-role="fieldcontain">
    			<label for="name">Name:</label>
    			<input type="text" name="name" id="name" value=""  />
 		</div>
-		
+
 		<div data-role="fieldcontain">
    			<label for="studentEmail">Points:</label>
    			<input type="text" name="points" id="points" value=""  />
-		</div>	
+		</div>
 		<div data-role="fieldcontain">
    			<label for="studentSecret">Deadline:</label>
    			<input type="date" name="deatline" id="deadline" value=""  />
 		</div>
-		
-		<p>
-			<a href="GradableComponents.html" data-role="button" data-transition="slide">Save</a> 
-		</p>
-		
+
+
 	</div>
-	
 	<div data-role="footer">
-		Footer	
+		<a href="InstructorsAdd.html" data-icon="edit" data-role="button" data-transition="slide">Save</a>
+
 	</div>
-	
+
 </div>
 </body>
 </html>

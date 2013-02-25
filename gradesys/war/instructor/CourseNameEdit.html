@@ -6,65 +6,73 @@
 	<title>jQuery Mobile: Demos and Documentation</title>
 	<link rel="stylesheet"  href="../css/jquery.mobile-1.2.0.css" />
 	<!-- <link rel="stylesheet" href="docs/_assets/css/jqm-docs.css" /> -->
-	
+
 	<script src="../js/jquery.js"></script>
 	<!-- <script src="docs/_assets/js/jqm-docs.js"></script> -->
 	<script src="../js/jquery.mobile-1.2.0.js"></script>
-		
+   <script src="../js/jquery.validate.min.js"></script>
+   <script src="../js/app.js"></script>
+
 	<script type="text/javascript">
-		
-		
+
+
 	</script>
-	
+
 </head>
 <body>
-<div id="viewCourse" data-role="page">
-	<div data-role="header">
-	  <a id="cvback" data-icon="back" data-transition="slide"
-      >Back</a>
-      <h1 id="title"></h1>
-	</div>
-	
+<div id="courseNameEdit" data-role="page">
+	<div data-role="header" data-position="inline">
+		 <a href="index.html" id="back" data-back="true"
+			data-icon="back" data-transition="slide"
+		 >Back</a>
+		 <h1> GradeBoard </h1>
+		  <a href="index.html" class="ui-btn-right" id="logout"data-transition="slide"
+		 >Logout</a>
+    </div>
+
+	<div class="ui-bar ui-bar-a" style="text-align:center;">
+	    <h3 style="margin-top: 8px;  float: center;">Edit Course Name</h3>
+
+    </div>
+
  	<div data-role="content">
- 		
-		<p>
-			<a href="Instructors.html" data-role="button" data-transition="slide">Instructors</a> 
-		</p>
-		
-		<p>
-			<a href="Students.html" data-role="button" data-transition="slide">Students</a> 
-		</p>
-		
-		<p>
-			<a href="GradableComponents.html" data-role="button" data-transition="slide">Gradable Components</a> 
-		</p>
-		
+
+		<form id="frmEditCourse">
+         <div data-role="fieldcontain">
+            <label for="courseName">Edit Course Name:</label> <input
+               type="text" name="courseName" class="required"
+               id="courseName" value="CSE 330 01 DATA STRUCTURES"
+            />
+         </div>
+     </form>
+
 	</div>
-	
+
 	<div data-role="footer">
-		Footer	
+		<button id="saveLink" data-icon="save">Save</button>
 	</div>
-	
+
+
       <script type="text/javascript">
-   
-      $('#viewCourse').die().live('pageinit', function() {
+
+      $('#courseNameEdit').die().live('pageinit', function() {
          //console.log("pageinitialized");
-         $('#cvback').click(function() {
+         $('#cneback').click(function() {
             console.log("back clicked");
             app.view.courseList.render();
-            $.mobile.changePage("CourseOperations.html",
+            $.mobile.changePage("CourseEdit.html",
                {
                   allowSamePageTransition : true,
                   transition : 'none',
                   reloadPage : false
                });
-         });        
-        
+         });
+
       });
-      
-      $('#viewCourse').live("pagebeforeshow", function() {
+
+      $('#courseNameEdit').live("pagebeforeshow", function() {
            //var params = app.util.getUrlVars()["courseName"];
-           var title = app.model.courseView.get();
+           var title = app.model.courseEdit.get();
            console.log(title);
            $('#title').empty();
            $('#title').append(title);

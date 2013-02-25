@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.google.appengine.api.users.User;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
+import com.google.appengine.labs.repackaged.org.json.JSONException;
 
 public class LoginFilter implements Filter {
 
@@ -32,9 +33,44 @@ public class LoginFilter implements Filter {
 		HttpServletResponse httpResp = (HttpServletResponse) resp;
 		UserService userService = UserServiceFactory.getUserService();
 		User user = userService.getCurrentUser();
+		String servletPath = httpReq.getServletPath();
 		if(user == null) {
-			httpResp.sendRedirect(userService.createLoginURL(httpReq.getServletPath()));
+			String operation = req.getParameter("op");
+			if(!Util.isEmpty(operation) && !operation.toLowerCase().equals("login")) {
+				String[] params = servletPath.split("/");
+				if(params != null && params.length > 1) {
+					String page = req.getParameter("page");
+					if(Util.isEmpty(page)) {
+						servletPath = "/" + params[1];
+					} else {
+						servletPath = "/" + params[1] + "/" + page;
+					}
+				}				
+			}
+			String loginUrl = userService.createLoginURL(servletPath);
+			//browser is sending the request. not through ajax.
+			if(operation == null) {
+				httpResp.sendRedirect(loginUrl);
+			}
+			else {
+				try {
+					httpResp.getWriter().write(Util.getRedirectJson(loginUrl));
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					httpResp.getWriter().write("{}");
+				}
+			}
 		} else {
+			String operation = req.getParameter("op");
+			if(!Util.isEmpty(operation) && operation.toLowerCase().equals("login")) {
+				try {
+					httpResp.getWriter().write(Util.getRedirectJson("/instructor/index.html"));
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					httpResp.getWriter().write("{}");
+				}
+				return;
+			}
 			String csrfToken = CsrfCipher.encryptUserId(user.getUserId());
 			httpReq.setAttribute("csrfToken", csrfToken);
 			httpReq.setAttribute("user", user);

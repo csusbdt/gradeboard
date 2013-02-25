@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>jQuery Mobile: Demos and Documentation</title>
+<link rel="stylesheet" href="../css/jquery.mobile-1.2.0.css" />
+<!-- <link rel="stylesheet" href="docs/_assets/css/jqm-docs.css" /> -->
+
+<script src="../js/jquery.js"></script>
+<!-- <script src="docs/_assets/js/jqm-docs.js"></script> -->
+<script src="../js/jquery.mobile-1.2.0.js"></script>
+<script src="../js/jquery.validate.min.js"></script>
+<script src="../js/app.js"></script>
+
+<script type="text/javascript">
+   $(document).bind("mobileinit", function() {
+      $.mobile.loadingMessageTextVisible = true;
+   });
+
+   /*$(document).bind("pageinit", function() {
+      $.mobile.showPageLoadingMsg("a", "Loading Course List....");
+      app.controller.courseList.init();
+      $.mobile.hidePageLoadingMsg();
+      /*$.mobile.showPageLoadingMsg("a", "Loading Course List....");
+      $.ajax({
+       type : 'GET',
+       url : "/instructor/controller",
+       data : {
+         op : 'listCourses'
+       },
+       dataType : "json"
+      }).done(function(data) {
+       if (data.err) {
+         alert(data.err);
+       } else {
+         $("#main > p").remove();
+         $.each(data.courses, function(i, course) {
+           var $p = $('<p></p>');
+           var $a = $('<a data-role="button" data-transition="slide" href="CourseOperations.html"></a>');
+           $('#main').append($p);
+           $a.html(course);
+           $p.append($a);
+         });
+         $('#main').trigger('create');
+         $.mobile.hidePageLoadingMsg();
+
+       }
+      }).fail(function(jqXHR, textStatus) {
+       consol.log(textStatus);
+       $.mobile.hidePageLoadingMsg();
+      });
+   });*/
+</script>
+
+</head>
+<body>
+
+   <div id="courseList" data-role="page">
+      <div data-role="header" data-position="inline">
+         <h1> GradeBoard </h1>
+          <a href="index.html" class="ui-btn-right" id="logout"data-transition="slide"
+         >Logout</a>
+      </div>
+
+      <div class="ui-bar ui-bar-a" style="text-align:center;">
+ <h3 style="margin-top: 8px;  float: center;">Quarter </h3>
+
+</div>
+
+      <div id="main" data-role="content">
+         <div data-role="fieldcontain">
+          <legend>Select Quarter:</legend>
+          <fieldset data-role="controlgroup">
+
+              <label for="select-choice-month">Quarter</label>
+              <select name="select-choice-month" id="select-choice-month">
+                  <option>Quarter</option>
+                  <option value="jan">Winter</option>
+                  <option value="jan">Spring</option>
+                  <option value="jan">Summer</option>
+                  <option value="jan">Fall</option>
+                  <!-- etc. -->
+              </select>
+
+              <label for="select-choice-year">Year</label>
+              <select name="select-choice-year" id="select-choice-year">
+                  <option>Year</option>
+                  <option value="2011">2013</option>
+                  <!-- etc. -->
+              </select>
+
+          </fieldset>
+         </div>
+      </div>
+
+      <div data-role="footer">
+            <a href="CourseAdd.html" data-role="button"
+               data-transition="slide"
+            >Show Courses</a>
+
+      </div>
+
+   <script type="text/javascript">
+
+   </script>
+   </div>
+</body>
+</html>

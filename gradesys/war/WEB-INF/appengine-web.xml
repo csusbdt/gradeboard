@@ -15,6 +15,7 @@
 
   <static-files>
       <exclude path="/instructor/*" />
+      <exclude path="/logout/*" />
   </static-files>
   
   <!--

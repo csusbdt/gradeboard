@@ -6,45 +6,51 @@
 	<title>jQuery Mobile: Demos and Documentation</title>
 	<link rel="stylesheet"  href="../css/jquery.mobile-1.2.0.css" />
 	<!-- <link rel="stylesheet" href="docs/_assets/css/jqm-docs.css" /> -->
-	
+
 	<script src="../js/jquery.js"></script>
 	<!-- <script src="docs/_assets/js/jqm-docs.js"></script> -->
 	<script src="../js/jquery.mobile-1.2.0.js"></script>
-		
+
 	<script type="text/javascript">
-		
-		
+
+
 	</script>
-	
+
 </head>
 <body>
 <div id="editgrades" data-role="page">
 	<div data-role="header">
-		Edit Grades
+		<a href="index.html" id="back" data-back="true"
+												 data-icon="back" data-transition="slide"
+									 >Back</a>
+									 <h1> GradeBoard </h1>
+									  <a href="index.html" class="ui-btn-right" id="logout"data-transition="slide"
+									 >Logout</a>
+								  </div>
+
+								  <div class="ui-bar ui-bar-a" style="text-align:center;">
+			<h3 style="margin-top: 8px;  float: center;">Edit Grades</h3>
 	</div>
-	
+
  	<div data-role="content">
 
 		<p>
-			<a href="GradeStudentEdit.html" data-role="button" data-transition="slide">Student1</a> 
+			<a href="GradeStudentEdit.html" data-role="button" data-transition="slide">Adam Smith</a>
 		</p>
-		
+
 		<p>
-			<a href="GradeStudentEdit.html" data-role="button" data-transition="slide">Student2</a> 
+			<a href="GradeStudentEdit.html" data-role="button" data-transition="slide">Maria Douglas</a>
 		</p>
-		
+
 		<p>
-			<a href="GradeStudentEdit.html" data-role="button" data-transition="slide">Student2</a> 
-		</p>		
-	
+			<a href="GradeStudentEdit.html" data-role="button" data-transition="slide">Terry Miller</a>
+		</p>
 	</div>
-	
-	<div data-role="footer">
-		<p>
-			<a href="GradeSheet.html" data-role="button" data-transition="slide">GradeSheet</a> 
-		</p>	
+
+	<div data-role="footer" style="min-height: 45px">
+		<a href="GradeSheet.html" data-icon="grid" data-role="button" data-transition="slide">GradeSheet</a>
 	</div>
-	
+
 </div>
 
 </body>

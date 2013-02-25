@@ -34,3 +34,13 @@ label.error { display: inline-block; margin-left: 22%; }
  
 
 em { color: red; font-weight: bold; padding-right: .25em; }
+
+.topbar { 
+    background: #990000; 
+    border-bottom: solid 2px #EEE; 
+    padding: 3px 0; 
+    text-align: center; 
+    color: white;
+}
+
+​

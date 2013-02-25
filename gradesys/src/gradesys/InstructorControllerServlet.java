@@ -53,6 +53,9 @@ public class InstructorControllerServlet extends HttpServlet {
 	private String saveCourse(HttpServletRequest req, HttpServletResponse resp) {
 		String oldCourseName = req.getParameter("oldCourseName");
 		String newCourseName = req.getParameter("newCourseName");
+		if(Util.isEmpty(oldCourseName) || Util.isEmpty(newCourseName)) {
+			return "{}";
+		}
 		try {
 			UserService userService = UserServiceFactory.getUserService();
 			User user = userService.getCurrentUser();
@@ -87,13 +90,30 @@ public class InstructorControllerServlet extends HttpServlet {
 			if(courses.size() == 0)
 				return "{}";
 			
-			JSONArray jsonArray = new JSONArray();
-			for(int i = 0; i < courses.size(); i++) {
-				Course course = courses.get(i);
-				jsonArray.put(course.getName());
+			return Util.getCoursesJson(courses);
+		} catch (Exception e) {
+			return "{ \"err\": \"Unable to list courses.\" }";
+		}	
+	}
+	
+	private String listCourse(HttpServletRequest req, HttpServletResponse resp) {
+		try {
+			String courseId = req.getParameter("id");
+			if(Util.isEmpty(courseId)) {
+				return "{}";
 			}
+			UserService userService = UserServiceFactory.getUserService();
+			User user = userService.getCurrentUser();
+			Instructor instructor = Instructor.getByName(user.getUserId());
+			if(instructor == null) {
+				return "{}";
+			}
+			Course course = Auth.getCourseDetailsByInstructor(courseId, instructor.getKey());
+			if(course == null)
+				return "{}";
+			
 			JSONObject jsonObject = new JSONObject();
-			jsonObject.put("courses", jsonArray);
+			jsonObject.put("courseName", course.getName());
 			return jsonObject.toString();
 		} catch (Exception e) {
 			return "{ \"err\": \"Unable to list courses.\" }";
@@ -110,6 +130,9 @@ public class InstructorControllerServlet extends HttpServlet {
 			}
 			if(operation.equalsIgnoreCase("coursesave")) {				
 				resp.getWriter().write(saveCourse(req, resp));
+			}
+			if(operation.equalsIgnoreCase("listcourse")) {				
+				resp.getWriter().write(listCourse(req, resp));
 			}
 		} else {
 			resp.getWriter().print("{ \"err\": \"unknown operation\" }");

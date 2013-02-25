@@ -6,35 +6,44 @@
 	<title>jQuery Mobile: Demos and Documentation</title>
 	<link rel="stylesheet"  href="../css/jquery.mobile-1.2.0.css" />
 	<!-- <link rel="stylesheet" href="docs/_assets/css/jqm-docs.css" /> -->
-	
+
 	<script src="../js/jquery.js"></script>
 	<!-- <script src="docs/_assets/js/jqm-docs.js"></script> -->
 	<script src="../js/jquery.mobile-1.2.0.js"></script>
-		
+
 	<script type="text/javascript">
-		
-		
+
+
 	</script>
-	
+
 </head>
 <body>
 <div id="instructorsDelete" data-role="page">
-	<div data-role="header">
-		Instructor
-	</div>
-	
+	  <div data-role="header" data-position="inline">
+	     <a href="index.html" id="back" data-back="true"
+		             data-icon="back" data-transition="slide"
+         >Back</a>
+		 <h1> GradeBoard </h1>
+		  <a href="index.html" class="ui-btn-right" id="logout"data-transition="slide"
+		 >Logout</a>
+	  </div>
+
+      <div class="ui-bar ui-bar-a" style="text-align:center;">
+ 		<h3 style="margin-top: 8px;  float: center;">Delete Instructor</h3>
+
+   	</div>
+
+
  	<div data-role="content">
- 	
-		<p>
-			<a href="Instructors.html" data-role="button" data-transition="slide">Delete</a> 
-		</p>
-		
+		<legend style="text-align:center;">Andrew Jacobs</legend>
+
+
 	</div>
-	
+
 	<div data-role="footer">
-		Footer	
-	</div>
-	
+			<a href="Instructors.html" data-role="button" data-transition="slide">Delete</a>
+    </div>
+
 </div>
 </body>
 </html>

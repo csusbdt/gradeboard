@@ -34,7 +34,7 @@ public class Auth {
 	public Long getCourseId() {
 		return (Long) entity.getProperty(namePropertyName);
 	}
-	
+
 	public Key getInstructor() {
 		return entity.getParent();
 	}
@@ -50,8 +50,9 @@ public class Auth {
 	public static void deleteByName(Long courseId) {
 		deleteEntityByName(courseId);
 	}
-	
-	public static Auth create(Long courseId, Key instructorKey) throws CourseAlreadyExistsException {
+
+	public static Auth create(Long courseId, Key instructorKey)
+			throws CourseAlreadyExistsException {
 		return new Auth(createEntity(courseId, instructorKey));
 	}
 
@@ -67,39 +68,61 @@ public class Auth {
 	// Helper function that runs inside or outside a transaction.
 	private static Entity getEntityByCourseId(Long courseId) {
 		Query query = new Query(entityKind);
-		Query.Filter filter = new FilterPredicate(namePropertyName, FilterOperator.EQUAL, courseId); 
+		Query.Filter filter = new FilterPredicate(namePropertyName,
+				FilterOperator.EQUAL, courseId);
 		query.setFilter(filter);
-		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+		DatastoreService datastore = DatastoreServiceFactory
+				.getDatastoreService();
 		return datastore.prepare(query).asSingleEntity();
 	}
-	
-	
-	public static List<Course> getCoursesByInstructor(Key instructorKey) throws EntityNotFoundException {
+
+	public static List<Course> getCoursesByInstructor(Key instructorKey)
+			throws EntityNotFoundException {
 		Query query = new Query(entityKind);
 		query.setAncestor(instructorKey);
-		/*Query.Filter filter = new FilterPredicate(namePropertyName, FilterOperator.EQUAL, courseId); 
-		query.setFilter(filter);*/
-		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+		/*
+		 * Query.Filter filter = new FilterPredicate(namePropertyName,
+		 * FilterOperator.EQUAL, courseId); query.setFilter(filter);
+		 */
+		DatastoreService datastore = DatastoreServiceFactory
+				.getDatastoreService();
 		Iterator<Entity> iterator = datastore.prepare(query).asIterator();
 		List<Course> courses = new ArrayList<Course>();
-		while(iterator.hasNext()) {
+		while (iterator.hasNext()) {
 			Entity entity = iterator.next();
-			Long courseId = (Long)entity.getProperty(namePropertyName);
+			Long courseId = (Long) entity.getProperty(namePropertyName);
 			Course course = Course.getByCourseId(courseId);
 			courses.add(course);
 		}
 		return courses;
-		
+
+	}
+
+	public static Course getCourseDetailsByInstructor(String id,
+			Key instructorKey) throws EntityNotFoundException {
+		Query query = new Query(entityKind);
+		query.setAncestor(instructorKey);
+		Query.Filter filter = new FilterPredicate(namePropertyName,
+				FilterOperator.EQUAL, id);
+		query.setFilter(filter);
+		DatastoreService datastore = DatastoreServiceFactory
+				.getDatastoreService();
+		Entity instructorEntity = datastore.prepare(query).asSingleEntity();
+		Long courseId = (Long) instructorEntity.getProperty(namePropertyName);
+		Course course = Course.getByCourseId(courseId);
+		return course;
 	}
 
 	// Helper function that runs inside or outside a transaction.
 	private static void saveOrCreateEntity(Entity entity) {
-		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-		datastore.put(entity);		
+		DatastoreService datastore = DatastoreServiceFactory
+				.getDatastoreService();
+		datastore.put(entity);
 	}
 
 	private static void deleteEntityByName(Long courseId) {
-		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+		DatastoreService datastore = DatastoreServiceFactory
+				.getDatastoreService();
 		Transaction txn = datastore.beginTransaction();
 		Entity entity = getEntityByCourseId(courseId);
 		if (entity != null) {
@@ -107,9 +130,11 @@ public class Auth {
 		}
 		txn.commit();
 	}
-	
-	private static Entity createEntity(Long courseId, Key instructorKey) throws CourseAlreadyExistsException {
-		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+
+	private static Entity createEntity(Long courseId, Key instructorKey)
+			throws CourseAlreadyExistsException {
+		DatastoreService datastore = DatastoreServiceFactory
+				.getDatastoreService();
 		Transaction txn = datastore.beginTransaction();
 		Entity entity = getEntityByCourseId(courseId);
 		if (entity != null) {

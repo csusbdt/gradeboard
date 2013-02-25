@@ -43,7 +43,8 @@
 		<url-pattern>/instructor/*</url-pattern>
 	</filter-mapping>
 		
-	<!-- Servlet Mappings -->
+	
+   <!-- Servlet Mappings -->
 	
 	<!-- 
 	<servlet-mapping>
@@ -59,7 +60,7 @@
  
 	<servlet-mapping>
 		<servlet-name>Logout</servlet-name>
-		<url-pattern>/logout</url-pattern>
+		<url-pattern>/instructor/logout</url-pattern>
 	</servlet-mapping> 
 	
 	<servlet-mapping>
