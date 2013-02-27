@@ -120,9 +120,9 @@ app.view.courseList = {};
       $.mobile.showPageLoadingMsg("a", "Loading Course List....");
       $.each(courses.courses, function(i, course) {
             var $p = $('<p></p>');
-            var query = "CourseOperations.html"; //?courseName=" + course;
-            var onclick = "app.model.courseOperations.setName('" + course.name + "');app.model.courseOperations.setId(" + course.id + ");app.view.transfer('" + query + "')";
-            var $a = $('<a data-role="button" data-transition="slide" onclick="' + onclick + '" href="' + query + '"></a>');            
+            var query = "CourseDetails.html"; //?courseName=" + course;
+            var onclick = "app.model.courseDetails.setName('" + course.name + "');app.model.courseDetails.setId(" + course.id + ");app.view.transfer('" + query + "')";
+            var $a = $('<a data-role="button" style="text-align:left" data-transition="slide" onclick="' + onclick + '" href="' + query + '"></a>');            
             $('#main').append($p);
             $a.html(course.name);
             $p.append($a);
@@ -178,132 +178,7 @@ app.controller.courseList = {};
 })(jQuery, app.model.courseList, app.view.courseList);
 
 
-/***** Course Operations *****/
-app.model.courseOperations = {};
 
-(function() {
-   
-   var name;
-   
-   var id;
-   
-   
-   var courseDetails;
-   
-   app.model.courseOperations.setId = function(data) {
-      id = data
-   };
-   
-   app.model.courseOperations.getName = function() {
-      return name;
-   };
-
-   app.model.courseOperations.setName = function(data) {
-      name = data;
-   };
-
-   app.model.courseOperations.getId = function() {
-      return id;
-   };
-
-   app.model.courseOperations.setCourseDetails = function(data) {
-      courseDetails = data;
-   };
-
-   app.model.courseOperations.getCourseDetails = function() {
-      return courseDetails;
-   };
-})();
-
-app.view.courseOperations = {};
-
-(function() {
-   
-   app.view.courseOperations.render = function(coursename) {
-      
-      $('#copContent').empty();
-      $("#copContent > p").remove();
-      var courseDetails =  app.model.courseOperations.getCourseDetails();
-      
-      if(courseDetails === null || courseDetails.courseName === null)
-         return;
-      
-      
-      var $p1 = $('<p></p>');
-      var coursename = "Course Name : "  + courseDetails.courseName;
-      $p1.append(coursename);      
-      $('#copContent').append($p1);
-      
-      
-      
-      $('#copContent').trigger('create');
-   };
-      
-})();
-
-app.controller.courseOperations = {};
-
-(function(jQuery, mcourseList, vcourseOperations) {
-   
-   app.controller.courseOperations.listCourse = function() {
-      var id = app.model.courseOperations.getId();
-      $.ajax({
-            type : 'POST',
-            url : "/instructor/controller",
-            data : {
-               id : id,
-               op : 'listcourse'
-            },
-            dataType : "json"
-      }).done(function(data) {
-         if (data.err) {
-            console.log(data.err);
-         } else if(data.redirectUrl) {
-          //app.view.transfer("../index.html");
-          window.location.href = data.redirectUrl;
-         }          
-         else {
-            app.model.courseOperations.setCourseDetails(data);
-            vcourseOperations.render(newCourseName);
-         }
-      }).fail(function(jqXHR, textStatus) {
-            consol.log(textStatus);
-            $.mobile.hidePageLoadingMsg();
-      });
-   };
-
-   app.controller.courseOperations.saveCourse = function() {
-      var newCourseName = $('#courseName').val();
-      var oldCourseName = app.model.courseOperations.getName();
-      $.ajax({
-            type : 'POST',
-            url : "/instructor/controller",
-            data : {
-               oldCourseName : oldCourseName,
-               newCourseName : newCourseName,
-               op : 'coursesave'
-            },
-            dataType : "json"
-      }).done(function(data) {
-         if (data.err) {
-            alert(data.err);
-         } else if(data.redirectUrl) {
-          //app.view.transfer("../index.html");
-          window.location.href = data.redirectUrl;
-         } 
-         else {
-            mcourseList.update(data);
-            app.model.courseOperations.setCourseName(newCourseName);
-            vcourseOperations.render(newCourseName);
-         }
-      }).fail(function(jqXHR, textStatus) {
-            consol.log(textStatus);
-            $.mobile.hidePageLoadingMsg();
-      });
-   };
-   
-  
-})(jQuery, app.model.courseList, app.view.courseOperations);
 
 /*** Course Edit ***/
 

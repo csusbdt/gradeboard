@@ -71,6 +71,7 @@ public class LoginFilter implements Filter {
 				}
 				return;
 			}
+			
 			String csrfToken = CsrfCipher.encryptUserId(user.getUserId());
 			httpReq.setAttribute("csrfToken", csrfToken);
 			httpReq.setAttribute("user", user);

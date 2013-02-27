@@ -92,10 +92,10 @@
                         //$('#popupError').popup('open');
                         app.view.displayError(data.error);
                      } else {
-                        $.mobile.hidePageLoadingMsg();
                         app.model.courseList.update(data);
                         app.view.courseList.render();
                         app.view.transfer("index.html");
+                        $.mobile.hidePageLoadingMsg();
                      }
                    }).fail(function(jqXHR, textStatus) {
                         console.log(textStatus);

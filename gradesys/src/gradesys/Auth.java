@@ -10,6 +10,7 @@ import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.QueryResultIterator;
 import com.google.appengine.api.datastore.QueryResultList;
@@ -102,14 +103,25 @@ public class Auth {
 			Key instructorKey) throws EntityNotFoundException {
 		Query query = new Query(entityKind);
 		query.setAncestor(instructorKey);
-		Query.Filter filter = new FilterPredicate(namePropertyName,
-				FilterOperator.EQUAL, id);
-		query.setFilter(filter);
 		DatastoreService datastore = DatastoreServiceFactory
 				.getDatastoreService();
-		Entity instructorEntity = datastore.prepare(query).asSingleEntity();
-		Long courseId = (Long) instructorEntity.getProperty(namePropertyName);
-		Course course = Course.getByCourseId(courseId);
+		PreparedQuery pq = datastore.prepare(query);
+		boolean exists = false;
+		for (Entity result : pq.asIterable()) {
+			String courseId = result.getProperty(namePropertyName).toString();
+			if(courseId.equals(id)) {
+				exists = true;
+				break;
+			}
+//			  String firstName = (String) result.getProperty("firstName");
+//			  String lastName = (String) result.getProperty("lastName");
+//			  Long height = (Long) result.getProperty("height");
+//
+//			  System.out.println(firstName + " " + lastName + ", " + height + " inches tall");
+		}
+		if(!exists)
+			return null;
+		Course course = Course.getByCourseId(Long.valueOf(id));
 		return course;
 	}
 
