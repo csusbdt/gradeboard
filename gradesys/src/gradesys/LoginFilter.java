@@ -63,7 +63,7 @@ public class LoginFilter implements Filter {
 		} else {
 			String operation = req.getParameter("op");
 			if(!Util.isEmpty(operation) && operation.toLowerCase().equals("login")) {
-				try {
+				try {					
 					httpResp.getWriter().write(Util.getRedirectJson("/instructor/index.html"));
 				} catch (JSONException e) {
 					// TODO Auto-generated catch block

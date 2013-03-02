@@ -11,6 +11,9 @@
    <!-- <script src="docs/_assets/js/jqm-docs.js"></script> -->
    <script src="../js/jquery.mobile-1.2.0.js"></script>
    <script src="../js/app.js"></script>
+   <script src="../js/app.coursedetails.js"></script>
+   <script src="../js/app.editcoursedetails.js"></script>
+   <script src="../js/app.instructors.js"></script>
    <script type="text/javascript">
 
 
@@ -32,8 +35,8 @@
 
     </div>
 
-   <div data-role="content">
-	  <legend style="text-align:center;">CSE 330 01 DATA STRUCTURES</legend>
+   <div id="editContent" data-role="content">
+	  <legend id="legend" style="text-align:center;"></legend>
       <p>
          <a href="CourseNameEdit.html" data-role="button" data-transition="slide">Course Name</a>
       </p>
@@ -60,22 +63,21 @@
 
       $('#editCourse').die().live('pageinit', function() {
          //console.log("pageinitialized");
+         app.view.courseEdit.render(app.model.courseEdit.getName());
+
          $('#ceback').click(function() {
             console.log("back clicked");
-            app.view.courseOperations.render();
-            app.view.transfer("CourseOperations.html");
+            app.view.courseDetails.render();
+            app.view.transfer("CourseDetails.html");
          });
       });
 
-      /*$('#editCourse').live("pagebeforeshow", function() {
+      $('#editCourse').live("pagebeforeshow", function() {
            //var params = app.util.getUrlVars()["courseName"];
-           var title = app.model.courseEdit.get();
+           var title = app.model.courseEdit.getName();
            console.log(title);
-           $('#title').empty();
-           $('#title').append(title);
-           $('#courseName').val(title);
-           $('#header').trigger('create');
-      });*/
+           $('#courseName').append(title);
+      });
    </script>
 </div>
 

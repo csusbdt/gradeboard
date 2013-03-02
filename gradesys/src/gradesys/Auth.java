@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.security.auth.AuthPermission;
+
 import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -20,8 +22,10 @@ import com.google.appengine.api.datastore.Query.FilterPredicate;
 
 public class Auth {
 
-	private static final String entityKind = "auth";
-	private static final String namePropertyName = "courseId";
+	public static final String entityKind = "auth";
+	public static final String namePropertyName = "courseId";
+	private static final String permissions = "permissions";
+	
 	private Entity entity = null;
 
 	private Auth(Entity entity) {
@@ -30,6 +34,14 @@ public class Auth {
 
 	public Long getID() {
 		return (Long) entity.getKey().getId();
+	}
+	
+	public AuthPermissions getPermssions() {
+		return AuthPermissions.valueOf(entity.getProperty(permissions).toString());
+	}
+	
+	public void setPermssions(AuthPermissions permission) {
+		entity.setProperty(permissions, permission.toString());
 	}
 
 	public Long getCourseId() {
@@ -52,9 +64,9 @@ public class Auth {
 		deleteEntityByName(courseId);
 	}
 
-	public static Auth create(Long courseId, Key instructorKey)
+	public static Auth create(Long courseId, Key instructorKey, AuthPermissions perms)
 			throws CourseAlreadyExistsException {
-		return new Auth(createEntity(courseId, instructorKey));
+		return new Auth(createEntity(courseId, instructorKey, perms));
 	}
 
 	public static Auth getByCourseId(Long courseId) {
@@ -143,7 +155,7 @@ public class Auth {
 		txn.commit();
 	}
 
-	private static Entity createEntity(Long courseId, Key instructorKey)
+	private static Entity createEntity(Long courseId, Key instructorKey, AuthPermissions perms)
 			throws CourseAlreadyExistsException {
 		DatastoreService datastore = DatastoreServiceFactory
 				.getDatastoreService();
@@ -154,6 +166,11 @@ public class Auth {
 			throw new CourseAlreadyExistsException();
 		}
 		entity = new Entity(entityKind, instructorKey);
+		if(perms == null)
+			entity.setProperty(permissions, AuthPermissions.USER.toString());
+		else
+			entity.setProperty(permissions, perms.toString());
+		
 		entity.setProperty(namePropertyName, courseId);
 		datastore.put(entity);
 		txn.commit();

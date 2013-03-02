@@ -47,8 +47,8 @@ public class Course {
 		return new Course(createEntity(name));
 	}
 
-	public static Course save(String oldCourseName, String newCourseName) throws Exception {
-		Course course = getByName(oldCourseName);
+	public static Course save(String id, String newCourseName) throws Exception {
+		Course course = getByCourseId(Long.valueOf(id));
 		if (course == null) {
 			throw new CourseNotFoundException();
 		} else {
@@ -73,7 +73,7 @@ public class Course {
 
 	public static Course getByCourseId(Long courseId)
 			throws EntityNotFoundException {
-		Entity entity = getEntityByKey(courseId);
+		Entity entity = DatastoreUtil.getEntityByKey(courseId);
 		if (entity == null) {
 			return null;
 		} else {
@@ -81,19 +81,7 @@ public class Course {
 		}
 	}
 
-	// Helper function that runs inside or outside a transaction.
-	public static Entity getEntityByKey(Long id) throws EntityNotFoundException {
-		/*
-		 * Query query = new Query(entityKind); Query.Filter filter = new
-		 * FilterPredicate(Entity.KEY_RESERVED_PROPERTY, FilterOperator.EQUAL,
-		 * id); query.setFilter(filter);
-		 */
-		Key key = KeyFactory.createKey("course", id);
-
-		DatastoreService datastore = DatastoreServiceFactory
-				.getDatastoreService();
-		return datastore.get(key);
-	}
+	
 
 	// Helper function that runs inside or outside a transaction.
 	private static Entity getEntityByName(String name) {

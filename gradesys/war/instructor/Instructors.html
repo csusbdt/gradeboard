@@ -11,16 +11,27 @@
 	<!-- <script src="docs/_assets/js/jqm-docs.js"></script> -->
 	<script src="../js/jquery.mobile-1.2.0.js"></script>
 
-	<script type="text/javascript">
+   <script src="../js/app.js"></script>
+   <script src="../js/app.coursedetails.js"></script>
+   <script src="../js/app.editcoursedetails.js"></script>
+   <script src="../js/app.instructors.js"></script>
 
+   <script type="text/javascript">
+      $(document).bind("mobileinit", function() {
+         $.mobile.loadingMessageTextVisible = true;
+      });
 
-	</script>
+      $(document).bind("pageinit", function() {
+         $.mobile.showPageLoadingMsg("a", "Loading Instructors List....");
+         app.controller.instructorList.init();
+      });
+   </script>
 
 </head>
 <body>
 <div id="instructors" data-role="page">
       <div data-role="header" data-position="inline">
-         <a href="index.html" id="back" data-back="true"
+         <a id="insback" data-back="true"
             data-icon="back" data-transition="slide"
          >Back</a>
          <h1> GradeBoard </h1>
@@ -32,15 +43,15 @@
           <h3 style="margin-top: 8px;  float: center;">Instructors</h3>
       </div>
 
- 	<div data-role="content">
+   <div id="instructorList" data-role="content">
 
-		<p>
+		<!--<p>
 			<a href="InstructorsDelete.html" data-role="button" data-transition="slide">Joe Walter</a>
 		</p>
 
 		<p>
 			<a href="InstructorsDelete.html" data-role="button" data-transition="slide">Sam Rodrigues</a>
-		</p>
+		</p>-->
 
 	</div>
 
@@ -48,6 +59,28 @@
 			<a href="InstructorsAdd.html" data-icon="edit" data-role="button" data-transition="slide">Add Instructor</a>
 	</div>
 
+   <script type="text/javascript">
+
+
+      $('#instructors').die().live('pageinit', function() {
+         //console.log("pageinitialized");
+         //app.view.courseNameEdit.render(app.model.courseEdit.getName());
+
+         //Back button
+         /*$('#insback').click(function() {
+            console.log("back clicked");
+            //app.view.courseEdit.render();
+            $.mobile.changePage("CourseEdit.html",
+            {
+               allowSamePageTransition : true,
+               transition : 'none',
+               reloadPage : false
+            });
+         });*/
+
+         app.controller.instructorList.init();
+      });
+   </script>
 </div>
 </body>
 </html>

@@ -178,42 +178,6 @@ app.controller.courseList = {};
 })(jQuery, app.model.courseList, app.view.courseList);
 
 
-
-
-/*** Course Edit ***/
-
-app.model.courseEdit = {};
-
-(function() {
-   
-   var courseName;
-   
-   app.model.courseEdit.update = function(data) {
-      courseName = data;
-    };
-    
-    app.model.courseEdit.get = function() {
-       return courseName;
-    };
-})();
-
-app.view.courseEdit = {};
-
-(function() {
-   var courses;
-   
-   app.view.courseEdit.render = function(coursename) {
-      $('#title').empty();
-      $('#title').append(coursename);
-      $('#courseName').val(coursename);
-      $('#header').trigger('create');
-   };
-      
-})();
-
-app.controller.courseEdit = {};
-
-
 /****** Utility ******/
 (function() {
 
