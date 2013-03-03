@@ -10,6 +10,11 @@
 	<script src="../js/jquery.js"></script>
 	<!-- <script src="docs/_assets/js/jqm-docs.js"></script> -->
 	<script src="../js/jquery.mobile-1.2.0.js"></script>
+   <script src="../js/jquery.validate.min.js"></script>
+   <script src="../js/app.js"></script>
+   <script src="../js/app.coursedetails.js"></script>
+   <script src="../js/app.editcoursedetails.js"></script>
+   <script src="../js/app.instructors.js"></script>
 
 	<script type="text/javascript">
 
@@ -20,7 +25,7 @@
 <body>
 <div id="instructorsAdd" data-role="page">
 	<div data-role="header">
-		<a href="index.html" id="back" data-back="true"
+		<a id="insaddback" data-back="true"
 		            data-icon="back" data-transition="slide"
 		         >Back</a>
 		         <h1>GradeBoard</h1>
@@ -34,19 +39,70 @@
 
  	<div data-role="content">
 
-		<div data-role="fieldcontain">
-   			<label for="instructorName">Enter Instructor Name:</label>
-   			<input type="text" name="instructorName" id="instructorName" value=""  />
-		</div>
-
+      <form id="frmAddInstructor">
+         <div data-role="fieldcontain">
+            <p>
+               <label for="instructorName">Enter Instructor Name:</label>
+               <input type="text" class="required" name="instructorName" id="instructorName" value=""  />
+            </p>
+            <p>
+               <label for="instructorEmail">Enter Instructor Email:</label>
+               <input type="text" class="required" name="instructorEmail" id="instructorEmail" value=""  />
+            </p>
+         </div>
+       </form>
 
 	</div>
 
-	  <div data-role="footer">
+   <div data-role="footer">
+      <button id="instructoraddsave" data-icon="save">Save</button>
+   </div>
 
-			<a href="InstructorsAdd.html" data-icon="edit" data-role="button" data-transition="slide">Save</a>
+   <script type="text/javascript">
 
-	  </div>
+      $('#instructorsAdd').die().live('pageinit', function() {
+
+         $('#insaddback').click(function() {
+            //app.view.courseList.render();
+            app.view.transfer("Instructors.html");
+         });
+
+         $('#instructoraddsave').click(function() {
+            if ($("#frmAddInstructor").valid()) {
+               var insname = $('#instructorName').val();
+               var insemail = $('#instructorEmail').val();
+               var cId = app.model.courseEdit.getId();
+               $.mobile.showPageLoadingMsg("a", "Saving Instructor : "  + "....");
+               $.ajax({
+                  type : 'POST',
+                  url : "/instructor/controller",
+                  data : {
+                     instructorname : insname,
+                     instructoremail : insemail,
+                     courseId : cId,
+                     op : 'addinsructor'
+                  },
+                  dataType : "json"
+               }).done(function(data) {
+                  if (data.error) {
+                     console.log(data.error);
+                     $.mobile.hidePageLoadingMsg();
+                     //$('#popupError').popup('open');
+                     app.view.displayError(data.error);
+                  } else {
+                     //app.model.courseList.update(data);
+                     //app.view.courseList.render();
+                     app.view.transfer("Insructors.html");
+                     $.mobile.hidePageLoadingMsg();
+                  }
+                }).fail(function(jqXHR, textStatus) {
+                     console.log(textStatus);
+                     $.mobile.hidePageLoadingMsg();
+                });
+            }
+          });
+      });
+   </script>
 
 </div>
 </body>

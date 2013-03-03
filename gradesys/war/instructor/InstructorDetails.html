@@ -10,7 +10,10 @@
    <script src="../js/jquery.js"></script>
    <!-- <script src="docs/_assets/js/jqm-docs.js"></script> -->
    <script src="../js/jquery.mobile-1.2.0.js"></script>
-
+   <script src="../js/app.js"></script>
+   <script src="../js/app.coursedetails.js"></script>
+   <script src="../js/app.editcoursedetails.js"></script>
+   <script src="../js/app.instructors.js"></script>
    <script type="text/javascript">
 
 
@@ -18,9 +21,9 @@
 
 </head>
 <body>
-<div id="instructorsDetails" data-role="page">
+<div id="instructorDetails" data-role="page">
      <div data-role="header" data-position="inline">
-        <a href="index.html" id="back" data-back="true"
+        <a id="insdetailsback" data-back="true"
                    data-icon="back" data-transition="slide"
          >Back</a>
        <h1> GradeBoard </h1>
@@ -34,7 +37,7 @@
       </div>
 
 
-   <div data-role="content">
+   <div id="inscontent" data-role="content">
       <!-- <legend style="text-align:center;">Andrew Jacobs</legend> -->
    </div>
 
@@ -42,6 +45,22 @@
          <a href="Instructors.html" data-role="button" data-transition="slide">Delete</a>
     </div>
 
+   <script type="text/javascript">
+
+
+      $('#instructorDetails').die().live('pageinit', function() {
+         //console.log("pageinitialized");
+         app.view.instructorDetails.render();
+
+         //Back button
+         $('#insdetailsback').click(function() {
+            console.log("back clicked");
+            //app.view.courseEdit.render();
+            app.view.transfer('Instructors.html');
+         });
+
+      });
+   </script>
 </div>
 </body>
 </html>

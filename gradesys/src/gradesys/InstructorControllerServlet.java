@@ -58,19 +58,22 @@ public class InstructorControllerServlet extends HttpServlet {
 			if(instructorName == null || courseId == null || instructorEmail == null)
 				return Util.getMissingParameter("Missing paramter either instructorName or courseId or email.");
 
-			Course course = Course.create(courseId);
-			if(course == null) {
-				return Util.courseNotFoundError();
-			}
 			UserService userService = UserServiceFactory.getUserService();
 			User user = userService.getCurrentUser();
 			Instructor instructor = Instructor.getByUserId(user.getUserId());
 			if(instructor == null) {
-				instructor = Instructor.getByInstructorEmail(instructorEmail);
+				User newUser = new User(instructorEmail, null);
+				String userId = newUser.getUserId();
+				/*instructor = Instructor.getByInstructorEmail(instructorEmail);
 				if(instructor == null) {
 					Instructor.create(instructorName, "", instructorEmail);
-				}
+				}*/
+				//Instructor.create(name, userId, email)
 			} 
+			Course course = Course.getByCourseId(Long.valueOf(courseId));
+			if(course == null) {
+				return Util.courseNotFoundError();
+			}
 			Auth.create(course.getID(), instructor.getKey(), AuthPermissions.USER);
 			List<Course> courses = Auth.getCoursesByInstructor(instructor.getKey());
 			return Util.getCoursesJson(courses);
@@ -186,6 +189,9 @@ public class InstructorControllerServlet extends HttpServlet {
 			}
 			if(operation.equalsIgnoreCase("listcourse")) {				
 				resp.getWriter().write(listCourse(req, resp));
+			}
+			if(operation.equalsIgnoreCase("addinsructor")) {				
+				resp.getWriter().write(addInstructor(req, resp));
 			}
 			
 		} else {

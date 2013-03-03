@@ -67,16 +67,11 @@
          //app.view.courseNameEdit.render(app.model.courseEdit.getName());
 
          //Back button
-         /*$('#insback').click(function() {
+         $('#insback').click(function() {
             console.log("back clicked");
-            //app.view.courseEdit.render();
-            $.mobile.changePage("CourseEdit.html",
-            {
-               allowSamePageTransition : true,
-               transition : 'none',
-               reloadPage : false
-            });
-         });*/
+            app.view.courseEdit.render();
+            app.view.transfer('CourseEdit.html');
+         });
 
          app.controller.instructorList.init();
       });

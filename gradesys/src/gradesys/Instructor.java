@@ -150,6 +150,10 @@ public class Instructor {
 		if (instructor == null) {
 			throw new InstructorNotFoundException();
 		} else {
+			int index = nickName.indexOf("@");
+			if(index > 0) {
+				nickName = nickName.substring(0, index);
+			}
 			DatastoreService datastore = DatastoreServiceFactory
 					.getDatastoreService();
 			Transaction txn = datastore.beginTransaction();
