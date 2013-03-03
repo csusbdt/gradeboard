@@ -6,6 +6,8 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.api.datastore.Transaction;
+import com.google.appengine.api.users.User;
 
 public class DatastoreUtil {
 	
@@ -22,5 +24,23 @@ public class DatastoreUtil {
 				.getDatastoreService();
 		return datastore.get(key);
 	}
-
+	
+	public static User getUserIdFromAccount(User newUser) throws EntityNotFoundException,  Exception {
+		
+		DatastoreService datastore = DatastoreServiceFactory
+				.getDatastoreService();
+		Transaction txn = datastore.beginTransaction();
+		Entity entity = new Entity("User");
+		entity.setProperty("User", newUser);
+		Key key = datastore.put(entity);
+		txn.commit();
+		entity = datastore.get(key);
+		newUser = (User)entity.getProperty("User");
+		String userId = newUser.getUserId();
+		datastore.delete(key);	
+		if(userId == null) {
+			throw new Exception("Not a Google accoutn.");
+		}
+		return newUser;
+	}
 }

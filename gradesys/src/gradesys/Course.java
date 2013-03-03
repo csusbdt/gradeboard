@@ -10,6 +10,7 @@ import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Transaction;
+import com.google.appengine.api.datastore.TransactionOptions;
 
 public class Course {
 
@@ -42,9 +43,9 @@ public class Course {
 		deleteEntityByName(name);
 	}
 
-	public static Course create(String name)
+	public static Course create(String name, Instructor instructor)
 			throws CourseAlreadyExistsException {
-		return new Course(createEntity(name));
+		return new Course(createEntity(name, instructor));
 	}
 
 	public static Course save(String id, String newCourseName) throws Exception {
@@ -112,20 +113,35 @@ public class Course {
 		txn.commit();
 	}
 
-	private static Entity createEntity(String name)
+	private static Entity createEntity(String name, Instructor instructor)
 			throws CourseAlreadyExistsException {
-		DatastoreService datastore = DatastoreServiceFactory
-				.getDatastoreService();
-		Transaction txn = datastore.beginTransaction();
-		Entity entity = getEntityByName(name);
-		if (entity != null) {
+
+		Transaction txn = null;
+		try {
+			DatastoreService datastore = DatastoreServiceFactory
+					.getDatastoreService();
+			TransactionOptions options = TransactionOptions.Builder.withXG(true);
+			txn = datastore.beginTransaction(options);
+			Entity entity = getEntityByName(name);
+			if (entity != null) {
+				txn.commit();
+				throw new CourseAlreadyExistsException();
+			}
+			entity = new Entity(entityKind);
+			entity.setProperty(namePropertyName, name);
+			datastore.put(entity);
+			Long id = (Long) entity.getKey().getId();
+			Auth.create(id, instructor.getKey(), AuthPermissions.SUPER_USER, false);		
 			txn.commit();
-			throw new CourseAlreadyExistsException();
+			return entity;
+		} catch (Exception e) {
+			if(e instanceof CourseAlreadyExistsException) {
+				throw (CourseAlreadyExistsException)e;
+			}
+			return null;
+		} finally {
+			if(txn != null && txn.isActive())
+				txn.rollback();
 		}
-		entity = new Entity(entityKind);
-		entity.setProperty(namePropertyName, name);
-		datastore.put(entity);
-		txn.commit();
-		return entity;
 	}
 }

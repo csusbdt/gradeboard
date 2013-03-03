@@ -80,21 +80,21 @@
                      instructorname : insname,
                      instructoremail : insemail,
                      courseId : cId,
-                     op : 'addinsructor'
+                     op : 'addinsructor',
+                     page : 'InstructorsAdd.html'
                   },
                   dataType : "json"
                }).done(function(data) {
                   if (data.error) {
-                     console.log(data.error);
-                     $.mobile.hidePageLoadingMsg();
+                     console.log(data.error);;
                      //$('#popupError').popup('open');
                      app.view.displayError(data.error);
                   } else {
                      //app.model.courseList.update(data);
                      //app.view.courseList.render();
-                     app.view.transfer("Insructors.html");
-                     $.mobile.hidePageLoadingMsg();
+                     app.view.transfer("Instructors.html");
                   }
+                  $.mobile.hidePageLoadingMsg();
                 }).fail(function(jqXHR, textStatus) {
                      console.log(textStatus);
                      $.mobile.hidePageLoadingMsg();

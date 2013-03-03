@@ -64,9 +64,9 @@ public class Auth {
 		deleteEntityByName(courseId);
 	}
 
-	public static Auth create(Long courseId, Key instructorKey, AuthPermissions perms)
+	public static Auth create(Long courseId, Key instructorKey, AuthPermissions perms, boolean requiresTxn)
 			throws CourseAlreadyExistsException {
-		return new Auth(createEntity(courseId, instructorKey, perms));
+		return new Auth(createEntity(courseId, instructorKey, perms, requiresTxn));
 	}
 
 	public static Auth getByCourseId(Long courseId) {
@@ -155,17 +155,19 @@ public class Auth {
 		txn.commit();
 	}
 
-	private static Entity createEntity(Long courseId, Key instructorKey, AuthPermissions perms)
+	private static Entity createEntity(Long courseId, Key instructorKey, AuthPermissions perms, boolean requiresTxn)
 			throws CourseAlreadyExistsException {
 		DatastoreService datastore = DatastoreServiceFactory
 				.getDatastoreService();
-		Transaction txn = datastore.beginTransaction();
-		Entity entity = getEntityByCourseId(courseId);
+		Transaction txn = null;
+		if(requiresTxn)
+			txn = datastore.beginTransaction();
+		/*Entity entity = getEntityByCourseId(courseId);
 		if (entity != null) {
 			txn.commit();
 			throw new CourseAlreadyExistsException();
-		}
-		entity = new Entity(entityKind, instructorKey);
+		}*/
+		Entity entity = new Entity(entityKind, instructorKey);
 		if(perms == null)
 			entity.setProperty(permissions, AuthPermissions.USER.toString());
 		else
@@ -173,7 +175,8 @@ public class Auth {
 		
 		entity.setProperty(namePropertyName, courseId);
 		datastore.put(entity);
-		txn.commit();
+		if(txn != null)
+			txn.commit();
 		return entity;
 	}
 }

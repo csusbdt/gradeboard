@@ -10,7 +10,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.Entities;
+import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.users.User;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
@@ -25,18 +31,19 @@ public class InstructorControllerServlet extends HttpServlet {
 
 	private String addCourse(HttpServletRequest req, HttpServletResponse resp) {
 		String courseName = req.getParameter("name");
-		try {
-			Course course = Course.create(courseName);
+		try {			
 			UserService userService = UserServiceFactory.getUserService();
 			User user = userService.getCurrentUser();
 			Instructor instructor = Instructor.getByUserId(user.getUserId());
 			if(instructor == null) {
-				instructor = Instructor.create(user.getNickname(), user.getUserId(), user.getEmail());
-				Auth.create(course.getID(), instructor.getKey(), AuthPermissions.SUPER_USER);		
-			} else {
-				Auth.create(course.getID(), instructor.getKey(), AuthPermissions.SUPER_USER);
+				
+				instructor = Instructor.getByInstructorEmail(user.getEmail());
+				if(instructor == null)
+					instructor = Instructor.create(user.getNickname(), user.getUserId(), user.getEmail());
+				else
+					Instructor.updateUserId(user.getUserId(), user.getNickname(), user.getEmail());
 			}
-
+			Course.create(courseName, instructor);
 			List<Course> courses = Auth.getCoursesByInstructor(instructor.getKey());
 			return Util.getCoursesJson(courses);
 		} catch (CourseAlreadyExistsException e) {
@@ -59,22 +66,28 @@ public class InstructorControllerServlet extends HttpServlet {
 				return Util.getMissingParameter("Missing paramter either instructorName or courseId or email.");
 
 			UserService userService = UserServiceFactory.getUserService();
-			User user = userService.getCurrentUser();
-			Instructor instructor = Instructor.getByUserId(user.getUserId());
+			User newUser = new User(instructorEmail, "gmail.com");
+			newUser = DatastoreUtil.getUserIdFromAccount(newUser);
+			Instructor instructor = Instructor.getByUserId(newUser.getUserId());
 			if(instructor == null) {
-				User newUser = new User(instructorEmail, null);
-				String userId = newUser.getUserId();
+				instructor = Instructor.getByInstructorEmail(instructorEmail);
 				/*instructor = Instructor.getByInstructorEmail(instructorEmail);
 				if(instructor == null) {
 					Instructor.create(instructorName, "", instructorEmail);
 				}*/
-				//Instructor.create(name, userId, email)
+				if(instructor == null)
+					instructor = Instructor.create(newUser.getNickname(), newUser.getUserId(), newUser.getEmail());
 			} 
 			Course course = Course.getByCourseId(Long.valueOf(courseId));
 			if(course == null) {
 				return Util.courseNotFoundError();
 			}
-			Auth.create(course.getID(), instructor.getKey(), AuthPermissions.USER);
+			try {
+				Auth.create(course.getID(), instructor.getKey(), AuthPermissions.USER, true);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				//Ignore
+			}
 			List<Course> courses = Auth.getCoursesByInstructor(instructor.getKey());
 			return Util.getCoursesJson(courses);
 		} catch (Exception e) {
@@ -87,14 +100,17 @@ public class InstructorControllerServlet extends HttpServlet {
 		String courseId = req.getParameter("courseId");
 		try {
 			if(courseId == null)
-				return Util.getMissingParameter("Missing paramter courseId.");
+				return Util.getMissingParameter("Missing parameter courseId.");
 
 			UserService userService = UserServiceFactory.getUserService();
 			User user = userService.getCurrentUser();
 			Instructor instructor = Instructor.getByUserId(user.getUserId());
-			if(instructor == null)
-				return Util.getMissingParameter("Unable to find instructor with emailId  " + user.getEmail());
-
+			if(instructor == null) {
+				instructor = Instructor.getByInstructorEmail(user.getEmail());
+				if(instructor == null) {
+					return Util.getMissingParameter("Unable to find instructor with emailId  " + user.getEmail());
+				}
+			}
 			List<Instructor> instructors = Instructor.getInstructorsByCourseId(courseId, instructor.getKey());
 			return Util.getInstructorsJson(instructors);
 		} catch (Exception e) {
@@ -141,7 +157,7 @@ public class InstructorControllerServlet extends HttpServlet {
 					return "{}";
 				}
 			}
-			Instructor.updateUserId(user.getUserId(), user.getNickname(), user.getEmail());
+			//Instructor.updateUserId(user.getUserId(), user.getNickname(), user.getEmail());
 			List<Course> courses = Auth.getCoursesByInstructor(instructor.getKey());
 			if(courses.size() == 0)
 				return "{}";
@@ -162,7 +178,10 @@ public class InstructorControllerServlet extends HttpServlet {
 			User user = userService.getCurrentUser();
 			Instructor instructor = Instructor.getByUserId(user.getUserId());
 			if(instructor == null) {
-				return "{}";
+				instructor = Instructor.getByInstructorEmail(user.getEmail());
+				if(instructor == null) {
+					return "{}";
+				}
 			}
 			Course course = Auth.getCourseDetailsByInstructor(courseId, instructor.getKey());
 			if(course == null)

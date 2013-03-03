@@ -142,11 +142,7 @@ public class Instructor {
 	
 	public static Instructor updateUserId(String userId, String nickName, String email) throws Exception {
 		Instructor instructor = null;
-		if(userId != null) {
-			instructor = getByUserId(userId);
-		} else {
-			instructor = getByInstructorEmail(email);
-		}
+		instructor = getByInstructorEmail(email);
 		if (instructor == null) {
 			throw new InstructorNotFoundException();
 		} else {
@@ -180,7 +176,7 @@ public class Instructor {
 		}
 	}
 	
-	private static Entity createEntity(String iname, String userId, String email) throws CourseAlreadyExistsException {
+	private static Entity createEntity(String iname, String userId, String em) throws CourseAlreadyExistsException {
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 		Transaction txn = datastore.beginTransaction();
 		Entity entity = getEntityByName(name);
@@ -191,7 +187,7 @@ public class Instructor {
 		entity = new Entity(entityKind);
 		entity.setProperty(namePropertyName, userId);
 		entity.setProperty(name, iname);
-		entity.setProperty(email, email);
+		entity.setProperty(email, em);
 		datastore.put(entity);
 		txn.commit();
 		return entity;
