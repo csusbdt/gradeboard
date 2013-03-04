@@ -10,31 +10,39 @@
 	<script src="../js/jquery.js"></script>
 	<!-- <script src="docs/_assets/js/jqm-docs.js"></script> -->
 	<script src="../js/jquery.mobile-1.2.0.js"></script>
+   <script src="../js/app.js"></script>
+   <script src="../js/app.coursedetails.js"></script>
+   <script src="../js/app.editcoursedetails.js"></script>
+   <script src="../js/app.instructors.js"></script>
+   <script src="../js/app.students.js"></script>
 
 	<script type="text/javascript">
 
+      $(document).bind("pageinit", function() {
+         $.mobile.showPageLoadingMsg("a", "Loading Student List....");
 
+      });
 	</script>
 
 </head>
 <body>
 <div id="students" data-role="page">
 	<div data-role="header" data-position="inline">
-		<a href="index.html" id="back" data-back="true"
+		<a id="stuback" data-back="true"
 			             data-icon="back" data-transition="slide"
-	         >Back</a>
-			 <h1> GradeBoard </h1>
-			  <a href="index.html" class="ui-btn-right" id="logout"data-transition="slide"
-			 >Logout</a>
-		  </div>
+	    >Back</a>
+       <h1> GradeBoard </h1>
+        <a href="index.html" class="ui-btn-right" id="logout"data-transition="slide"
+       >Logout</a>
+   </div>
 
-	      <div class="ui-bar ui-bar-a" style="text-align:center;">
-	 		<h3 style="margin-top: 8px;  float: center;">Students</h3>
+   <div class="ui-bar ui-bar-a" style="text-align:center;">
+      <h3 style="margin-top: 8px;  float: center;">Students</h3>
 
    	</div>
- 	<div data-role="content">
+ 	<div id="studentList" data-role="content">
 
-		<p>
+		<!--<p>
 			<a href="StudentEdit.html" data-role="button" data-transition="slide">Adam Smith</a>
 		</p>
 
@@ -44,14 +52,31 @@
 
 		<p>
 			<a href="StudentEdit.html" data-role="button" data-transition="slide">Terry Miller</a>
-		</p>
+		</p>-->
 
 	</div>
 
 	<div data-role="footer">
-		<a href="InstructorsAdd.html" data-icon="edit" data-role="button" data-transition="slide">Add Student</a>
-		<a href="InstructorsAdd.html" data-icon="grid" data-role="button" data-transition="slide">Add Mulitple Students</a>
+		<a href="StudentAdd.html" data-icon="edit" data-role="button" data-transition="slide">Add Student</a>
+		<a href="AddStudentsBulk.html" data-icon="grid" data-role="button" data-transition="slide">Add Mulitple Students</a>
 	</div>
+
+   <script type="text/javascript">
+      //app.view.courseList.render();
+      $('#students').die().live("pageinit", function() {
+         /*$('#logout').click(function() {
+            app.logout();
+         });*/
+
+         app.controller.studentList.init();
+         //Back button
+         $('#stuback').click(function() {
+            console.log("back clicked");
+            app.view.transfer('CourseEdit.html');
+         });
+
+      });
+   </script>
 
 </div>
 </body>

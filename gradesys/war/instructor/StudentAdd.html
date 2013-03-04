@@ -5,12 +5,17 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>jQuery Mobile: Demos and Documentation</title>
 	<link rel="stylesheet"  href="../css/jquery.mobile-1.2.0.css" />
+   <link rel="stylesheet" href="../css/gradeboard.css" />
 	<!-- <link rel="stylesheet" href="docs/_assets/css/jqm-docs.css" /> -->
 
 	<script src="../js/jquery.js"></script>
 	<!-- <script src="docs/_assets/js/jqm-docs.js"></script> -->
 	<script src="../js/jquery.mobile-1.2.0.js"></script>
-
+   <script src="../js/app.js"></script>
+   <script src="../js/app.coursedetails.js"></script>
+   <script src="../js/app.editcoursedetails.js"></script>
+   <script src="../js/app.instructors.js"></script>
+   <script src="../js/app.students.js"></script>
 	<script type="text/javascript">
 
 
@@ -18,32 +23,34 @@
 
 </head>
 <body>
-<div id="student" data-role="page">
+<div id="studentAdd" data-role="page">
 	<div data-role="header" data-position="inline">
-			<a href="index.html" id="back" data-back="true"
-				             data-icon="back" data-transition="slide"
-		         >Back</a>
-				 <h1> GradeBoard </h1>
-				  <a href="index.html" class="ui-btn-right" id="logout"data-transition="slide"
-				 >Logout</a>
-			  </div>
+      <a id="stuaddback" data-back="true"
+                      data-icon="back" data-transition="slide"
+            >Back</a>
+          <h1> GradeBoard </h1>
+           <a href="index.html" class="ui-btn-right" id="logout"data-transition="slide"
+          >Logout</a>
+        </div>
 
-		      <div class="ui-bar ui-bar-a" style="text-align:center;">
-		 		<h3 style="margin-top: 8px;  float: center;">Add Student</h3>
+         <div class="ui-bar ui-bar-a" style="text-align:center;">
+         <h3 style="margin-top: 8px;  float: center;">Add Student</h3>
 
-   	</div>
+    </div>
 
- 	<div data-role="content">
+ 	<div id="studentAddContent" data-role="content">
 
- 		<div data-role="fieldcontain">
-   			<label for="studentName">Enter Student Name:</label>
-   			<input type="text" name="studentName" id="studentName" value=""  />
-		</div>
+      <form id="frmAddStudent">
+         <div data-role="fieldcontain">
+               <label for="studentName">Enter Student Name:</label>
+               <input type="text" class="required" name="studentName" id="studentName" value=""  />
+         </div>
 
-		<div data-role="fieldcontain">
-   			<label for="studentEmail">Enter Student Email:</label>
-   			<input type="text" name="studentEmail" id="studentEmail" value=""  />
-		</div>
+         <div data-role="fieldcontain">
+               <label for="studentEmail">Enter Student Email:</label>
+               <input type="text" class="required" name="studentEmail" id="studentEmail" value=""  />
+         </div>
+      </form>
 		<!--<div data-role="fieldcontain">
    			<label for="studentSecret">Enter Student Secret:</label>
    			<input type="text" name="studentSecret" id="studentSecret" value=""  />
@@ -52,8 +59,54 @@
 	</div>
 
 	<div data-role="footer">
-		<a href="Students.html" data-icon="edit" data-role="button" data-transition="slide">Save</a>
+      <button id="addStudent" data-icon="save">Save</button>
 	</div>
+
+   <script type="text/javascript">
+
+      $('#studentAdd').die().live('pageinit', function() {
+
+         $('#stuaddback').click(function() {
+            app.view.studentList.render();
+            app.view.transfer("Students.html");
+         });
+
+         $('#addStudent').click(function() {
+            if ($("#frmAddStudent").valid()) {
+               var studentname = $('#studentName').val();
+               var studentemail = $('#studentEmail').val();
+               var cId = app.model.courseEdit.getId();
+               $.mobile.showPageLoadingMsg("a", "Adding student : "  + "....");
+               $.ajax({
+                  type : 'POST',
+                  url : "/student/controller",
+                  data : {
+                     name : studentname,
+                     email : studentemail,
+                     courseId : cId,
+                     op : 'addstudent'
+                  },
+                  dataType : "json"
+               }).done(function(data) {
+                  if (data.error) {
+                     console.log(data.error);
+                     $.mobile.hidePageLoadingMsg();
+                     //$('#popupError').popup('open');
+                     app.view.displayError(data.error);
+                  } else {
+                     app.model.studentList.update(data);
+                     app.view.studentList.render();
+                     app.view.transfer("Students.html");
+                     $.mobile.hidePageLoadingMsg();
+                  }
+                }).fail(function(jqXHR, textStatus) {
+                     console.log(textStatus);
+                     $.mobile.hidePageLoadingMsg();
+                });
+            }
+          });
+      });
+   </script>
 
 </div>
 </body>

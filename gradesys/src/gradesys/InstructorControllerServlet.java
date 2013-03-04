@@ -27,7 +27,7 @@ import com.google.appengine.labs.repackaged.org.json.JSONObject;
 @SuppressWarnings("serial")
 public class InstructorControllerServlet extends HttpServlet {
 	
-	 private static final Logger logger = Logger.getLogger(InstructorControllerServlet.class.getName());
+	private static final Logger logger = Logger.getLogger(InstructorControllerServlet.class.getName());
 
 	private String addCourse(HttpServletRequest req, HttpServletResponse resp) {
 		String courseName = req.getParameter("name");
@@ -234,6 +234,5 @@ public class InstructorControllerServlet extends HttpServlet {
 		else {
 			resp.getWriter().print("{ \"err\": \"unknown operation\" }");
 		}
-	}
-	
+	}	
 }

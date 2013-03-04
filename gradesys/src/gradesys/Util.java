@@ -1,7 +1,11 @@
 package gradesys;
 
 import java.util.List;
+import java.util.Random;
 
+import com.google.appengine.api.users.User;
+import com.google.appengine.api.users.UserService;
+import com.google.appengine.api.users.UserServiceFactory;
 import com.google.appengine.labs.repackaged.org.json.JSONArray;
 import com.google.appengine.labs.repackaged.org.json.JSONException;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
@@ -29,6 +33,23 @@ public class Util {
 		}
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("courses", jsonArray);
+		return jsonObject.toString();
+	}
+	
+	public static String getStudentsJson(List<Student> students) throws JSONException {
+		if(students.size() == 0)
+			return "{}";
+		
+		JSONArray jsonArray = new JSONArray();
+		for(int i = 0; i < students.size(); i++) {
+			JSONObject jsonObject = new JSONObject();
+			Student student = students.get(i);
+			jsonObject.put("name", student.getName());
+			jsonObject.put("email", student.getEmail());
+			jsonArray.put(jsonObject);
+		}
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("students", jsonArray);
 		return jsonObject.toString();
 	}
 	
@@ -86,6 +107,44 @@ public class Util {
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("redirectUrl", url);
 		return jsonObject.toString();
+	}
+	
+	public static String GenerateRandomNumber(int charLength) {  
+	    String val = "";      
+
+//	    // char (1), random A-Z
+//	    int ranChar = 65 + (new Random()).nextInt(90-65);
+//	    char ch = (char)ranChar;        
+//	    val += ch;      
+//
+//	    // numbers (6), random 0-9
+//	    Random r = new Random();
+//	    int n = 100 + (int)r.nextFloat() * 900;
+//	    val += String.valueOf(n);
+//
+//	    val += "-";
+	    // char or numbers (5), random 0-9 A-Z
+	    for(int i = 0; i<6;){
+	        int ranAny = 48 + (new Random()).nextInt(90-65);
+
+	        if(!(57 < ranAny && ranAny<= 65)){
+	        char c = (char)ranAny;      
+	        val += c;
+	        i++;
+	        }
+
+	    }
+
+	    return val;
+    }
+	
+	public static void main(String str[]) {
+		try {
+			for(int i =0; i < 20; i++)
+				System.out.println(Util.GenerateRandomNumber(2));
+		} catch(Exception ex) {
+			ex.printStackTrace();
+		}
 	}
 	
 }

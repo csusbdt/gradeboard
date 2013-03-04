@@ -2,7 +2,8 @@ package gradesys;
 
 public enum AuthPermissions {
 	SUPER_USER("super"),
-	USER("user");
+	USER("user"),
+	STUDENT("student");
 	
 	String perms;
 	

@@ -14,9 +14,11 @@ import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
 import com.google.appengine.api.datastore.QueryResultIterator;
 import com.google.appengine.api.datastore.QueryResultList;
 import com.google.appengine.api.datastore.Transaction;
+import com.google.appengine.api.datastore.Query.CompositeFilter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 
@@ -24,7 +26,7 @@ public class Auth {
 
 	public static final String entityKind = "auth";
 	public static final String namePropertyName = "courseId";
-	private static final String permissions = "permissions";
+	public static final String permissions = "permissions";
 	
 	private Entity entity = null;
 
@@ -77,10 +79,33 @@ public class Auth {
 			return new Auth(entity);
 		}
 	}
+	
+	public static Auth getByCourseIdAndStudent(Long courseId, Key studentKey) {
+		Entity entity = getEntityByCourseIdAndStudentId(courseId, studentKey);
+		if (entity == null) {
+			return null;
+		} else {
+			return new Auth(entity);
+		}
+	}
+
 
 	// Helper function that runs inside or outside a transaction.
 	private static Entity getEntityByCourseId(Long courseId) {
 		Query query = new Query(entityKind);
+		Query.Filter filter = new FilterPredicate(namePropertyName,
+				FilterOperator.EQUAL, courseId);
+		query.setFilter(filter);
+		DatastoreService datastore = DatastoreServiceFactory
+				.getDatastoreService();
+		return datastore.prepare(query).asSingleEntity();
+	}
+	
+
+	// Helper function that runs inside or outside a transaction.
+	private static Entity getEntityByCourseIdAndStudentId(Long courseId, Key studentKey) {
+		Query query = new Query(entityKind);
+		query.setAncestor(studentKey);		
 		Query.Filter filter = new FilterPredicate(namePropertyName,
 				FilterOperator.EQUAL, courseId);
 		query.setFilter(filter);
@@ -108,7 +133,6 @@ public class Auth {
 			courses.add(course);
 		}
 		return courses;
-
 	}
 
 	public static Course getCourseDetailsByInstructor(String id,
