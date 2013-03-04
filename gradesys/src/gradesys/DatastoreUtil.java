@@ -12,13 +12,13 @@ import com.google.appengine.api.users.User;
 public class DatastoreUtil {
 	
 	// Helper function that runs inside or outside a transaction.
-	public static Entity getEntityByKey(Long id) throws EntityNotFoundException {
+	public static Entity getEntityByKey(String kind, Long id) throws EntityNotFoundException {
 		/*
 		 * Query query = new Query(entityKind); Query.Filter filter = new
 		 * FilterPredicate(Entity.KEY_RESERVED_PROPERTY, FilterOperator.EQUAL,
 		 * id); query.setFilter(filter);
 		 */
-		Key key = KeyFactory.createKey("course", id);
+		Key key = KeyFactory.createKey(kind, id);
 
 		DatastoreService datastore = DatastoreServiceFactory
 				.getDatastoreService();

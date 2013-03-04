@@ -46,6 +46,7 @@ public class Util {
 			Student student = students.get(i);
 			jsonObject.put("name", student.getName());
 			jsonObject.put("email", student.getEmail());
+			jsonObject.put("id", String.valueOf(student.getID()));
 			jsonArray.put(jsonObject);
 		}
 		JSONObject jsonObject = new JSONObject();

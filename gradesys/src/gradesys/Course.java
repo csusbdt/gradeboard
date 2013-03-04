@@ -74,7 +74,7 @@ public class Course {
 
 	public static Course getByCourseId(Long courseId)
 			throws EntityNotFoundException {
-		Entity entity = DatastoreUtil.getEntityByKey(courseId);
+		Entity entity = DatastoreUtil.getEntityByKey(Course.entityKind, courseId);
 		if (entity == null) {
 			return null;
 		} else {

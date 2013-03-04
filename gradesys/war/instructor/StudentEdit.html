@@ -11,6 +11,7 @@
    <script src="../js/jquery.js"></script>
    <!-- <script src="docs/_assets/js/jqm-docs.js"></script> -->
    <script src="../js/jquery.mobile-1.2.0.js"></script>
+   <script src="../js/jquery.validate.min.js"></script>
    <script src="../js/app.js"></script>
    <script src="../js/app.coursedetails.js"></script>
    <script src="../js/app.editcoursedetails.js"></script>
@@ -38,9 +39,9 @@
 
    	</div>
 
-   <div id="studentEditContent" data-role="content">
+   <div id="stueditcontent" data-role="content">
 
-      <form id="frmEditCourse">
+      <form id="frmEditStudentDetails">
          <div data-role="fieldcontain">
                <label for="studentName">Edit Student Name:</label>
                <input type="text" class="required" name="studentName" id="studentName" value=""  />
@@ -54,14 +55,14 @@
 
 	<div data-role="footer">
 
-         <button id="savestudentedit" data-icon="save">Save</button>
+      <button id="savestudentedit" data-icon="save">Save</button>
 
 	</div>
    <script type="text/javascript">
 
       $('#studentEdit').die().live('pageinit', function() {
          //console.log("pageinitialized");
-         app.view.studentEdit.render(app.model.studentEdit.getName());
+         app.view.studentEdit.render();
 
          //Back button
          $('#studeditback').click(function() {
@@ -73,18 +74,24 @@
 
          //Save button
          $('#savestudentedit').click(function() {
-           if ($("#frmEditCourse").valid()) {
-              var name = $('#courseName').val();
-              var id = app.model.courseEdit.getId();
-              console.log(id);
-              $.mobile.showPageLoadingMsg("a", "Saving Course Name: "  + "....");
+           if ($("#frmEditStudentDetails").valid()) {
+              var em = $('#studentEmail').val();
+              var nm = $('#studentName').val();
+              var stid = app.model.studentEdit.getId();
+              var cId = app.model.courseEdit.getId();
+              console.log(em);
+              console.log(nm);
+              console.log(stid);
+              $.mobile.showPageLoadingMsg("a", "Saving Student Details: "  + "....");
               $.ajax({
                  type : 'POST',
-                 url : "/instructor/controller",
+                 url : "/student/controller",
                  data : {
-                    courseId : id,
-                    courseName : name,
-                    op : 'coursenamesave'
+                    email : em,
+                    name  : nm,
+                    id : stid,
+                    courseId : cId,
+                    op : 'editstudent'
                  },
                  dataType : "json"
               }).done(function(data) {
@@ -94,13 +101,11 @@
                     //$('#popupError').popup('open');
                     app.view.displayError(data.error);
                  } else {
-                    var ncourseName = data.courseName;
-                    var ncourseId = data.courseId;
-                    app.model.courseEdit.update(name, id);
-                    app.model.courseDetails.setId(id);
-                    app.model.courseDetails.setName(name);
-                    app.view.courseEdit.render();
-                    app.view.transfer("CourseEdit.html");
+                    var nmr = data.name;
+                    var emr = data.email;
+                    app.model.studentEdit.setName(nmr);
+                    app.model.studentEdit.setEmail(emr);
+                    app.view.transfer("Students.html");
                     $.mobile.hidePageLoadingMsg();
                  }
                }).fail(function(jqXHR, textStatus) {

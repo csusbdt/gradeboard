@@ -37,7 +37,7 @@ app.view.studentList = {};
       $.each(students.students, function(i, student) {
             var $p = $('<p></p>');
             var query = "StudentEdit.html"; //?studentName=" + student;
-            var onclick = "app.model.studentEdit.setName('" + student.name + "');app.model.studentEdit.setEmail('" + student.email + "');app.view.transfer('" + query + "')";
+            var onclick = "app.model.studentEdit.setName('" + student.name + "');app.model.studentEdit.setEmail('" + student.email + "');app.model.studentEdit.setId('" + student.id + "');app.view.transfer('" + query + "')";
             var $a = $('<a data-role="button" style="text-align:left" data-transition="slide" onclick="' + onclick + '" href="' + query + '"></a>');            
             $('#studentList').append($p);
             $a.html(student.name);
@@ -104,6 +104,7 @@ app.model.studentEdit = {};
    
    var email;
    
+   var id;
    
    var studentEdit;
    
@@ -122,6 +123,14 @@ app.model.studentEdit = {};
    app.model.studentEdit.getEmail = function() {
       return email;
    };
+   
+   app.model.studentEdit.setId = function(data) {
+      id = data;
+   };
+   
+   app.model.studentEdit.getId = function() {
+      return id;
+   };
 
    app.model.studentEdit.setStudentEdit = function(data) {
       studentEdit = data;
@@ -138,31 +147,16 @@ app.view.studentEdit = {};
    
    app.view.studentEdit.render = function() {
       
-      $('#inscontent').empty();
-      $("#inscontent > p").remove();
+      $('#studentEditContent').empty();
+      $("#studentEditContent > p").remove();
       var name =  app.model.studentEdit.getName();
       var email =  app.model.studentEdit.getEmail();
       if(name === null)
          return;
      
       
-      var $p1 = $('<p></p>');
-      
-      var $l = $('<label for="studentName" class="ui-bar ui-bar-b"></label>');
-      $l.append('Student Name: ' + name);
-      
-      $p1.append($l);      
-      $('#inscontent').append($p1); 
-      
-      var $p2 = $('<p></p>');
-            
-      var $l1 = $('<label for="studentEmail" class="ui-bar ui-bar-b"></label>');
-      $l1.append('Student Email: ' + email);
-
-      $p2.append($l1);      
-      $('#inscontent').append($p2); 
-      
-      $('#studentsEdit').trigger('create');
+      $('#studentName').val(name);
+      $('#studentEmail').val(email);
    };
       
 })();

@@ -72,6 +72,10 @@ public class Student {
 		return new Student(createEntity(name, courseId, email));
 	}
 	
+	public static Student update(String studentId, String name, String email) throws CourseAlreadyExistsException {
+		return new Student(updateEntity(studentId, name, email));
+	}
+	
 	public static Student getByKey(Key key) {
 		Entity entity = getEntityByKey(key);
 		if (entity == null) {
@@ -180,5 +184,34 @@ public class Student {
 			if(txn != null && txn.isActive())
 				txn.rollback();
 		}
-	}	
+	}
+	
+	private static Entity updateEntity(String studentId, String studentName, String studentEmail) throws CourseAlreadyExistsException {
+		
+		Transaction txn = null;
+		try {
+			Entity studentEntity = DatastoreUtil.getEntityByKey(Student.entityKind, Long.valueOf(studentId));
+			if(studentEntity == null) {
+				throw new StudentNotFoundException();
+			}
+			Student student = new Student(studentEntity);
+			if(student.getEmail().equalsIgnoreCase(studentEmail) && student.getName().equalsIgnoreCase(studentName)) {
+				throw new StudentAlreadyExistsException();
+			}
+			DatastoreService datastore = DatastoreServiceFactory
+					.getDatastoreService();
+			txn = datastore.beginTransaction();
+			//Create student
+			studentEntity.setProperty(namePropertyName, studentEmail);
+			studentEntity.setProperty(name, studentName);
+			datastore.put(studentEntity);					
+			txn.commit();
+			return studentEntity;
+		} catch (Exception e) {
+			return null;
+		} finally {
+			if(txn != null && txn.isActive())
+				txn.rollback();
+		}
+	}
 }
