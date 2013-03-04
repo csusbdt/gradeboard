@@ -40,7 +40,12 @@
 		<servlet-name>StudentController</servlet-name>
 		<servlet-class>gradesys.StudentControllerServlet</servlet-class>
 	</servlet>
-
+   
+   <servlet>
+      <servlet-name>GradeController</servlet-name>
+      <servlet-class>gradesys.GradeControllerServlet</servlet-class>
+   </servlet>
+   
 	<!-- Filter Mappings -->
 	
 	<filter-mapping>
@@ -77,6 +82,11 @@
 		<servlet-name>StudentController</servlet-name>
 		<url-pattern>/student/controller</url-pattern>
 	</servlet-mapping> 
+   
+   <servlet-mapping>
+      <servlet-name>GradeController</servlet-name>
+      <url-pattern>/grade/controller</url-pattern>
+   </servlet-mapping> 
 	
 	<!-- Welcome File List -->
 	

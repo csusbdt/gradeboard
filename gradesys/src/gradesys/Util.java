@@ -2,7 +2,9 @@ package gradesys;
 
 import java.io.BufferedReader;
 import java.io.StringReader;
+import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
@@ -51,6 +53,26 @@ public class Util {
 		}
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("students", jsonArray);
+		return jsonObject.toString();
+	}
+	
+	public static String getGradableComponentJson(List<GradableComponent> gcs) throws JSONException {
+		if(gcs.size() == 0)
+			return "{}";
+		
+		JSONArray jsonArray = new JSONArray();
+		for(int i = 0; i < gcs.size(); i++) {
+			JSONObject jsonObject = new JSONObject();
+			GradableComponent gc = gcs.get(i);
+			jsonObject.put("name", gc.getName());
+			jsonObject.put("points", String.valueOf(gc.getPoints()));
+			jsonObject.put("id", String.valueOf(gc.getID()));
+			String dline = DateFormat.getInstance().format((Date)gc.getDeadline());
+			jsonObject.put("deadline", dline);
+			jsonArray.put(jsonObject);
+		}
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("gcs", jsonArray);
 		return jsonObject.toString();
 	}
 	

@@ -130,9 +130,6 @@ public class StudentControllerServlet extends HttpServlet {
 			if(operation.equalsIgnoreCase("addstudent")) {
 				resp.getWriter().write(addStudent(req, resp));				
 			}
-			else if(operation.equalsIgnoreCase("addstudent")) {
-				resp.getWriter().write(addStudent(req, resp));
-			}
 			else if(operation.equalsIgnoreCase("editstudent")) {
 				resp.getWriter().write(editStudent(req, resp));
 			}
