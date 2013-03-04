@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.tools.ant.taskdefs.Recorder;
+
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
@@ -70,6 +72,10 @@ public class Student {
 	
 	public static Student create(String name, String courseId, String email) throws CourseAlreadyExistsException {
 		return new Student(createEntity(name, courseId, email));
+	}
+	
+	public static String createBulk(List<List<String>> studentData, String courseId) throws Exception {
+		return createEntityBulk(studentData, courseId);
 	}
 	
 	public static Student update(String studentId, String name, String email) throws CourseAlreadyExistsException {
@@ -183,6 +189,73 @@ public class Student {
 		} finally {
 			if(txn != null && txn.isActive())
 				txn.rollback();
+		}
+	}
+	
+	private static String createEntityBulk(List<List<String>> studentData, String courseId) throws Exception {
+
+		try {
+			List<String> columns = studentData.remove(0);
+			DatastoreService datastore = DatastoreServiceFactory
+					.getDatastoreService();
+			
+			List<String> updatedResults  = new ArrayList<String>();
+			List<String> createdResults  = new ArrayList<String>();
+			TransactionOptions options = TransactionOptions.Builder
+					.withXG(true);
+			for(List<String> record: studentData) {
+				Transaction txn = null;
+				try {
+					txn = datastore.beginTransaction(options);
+					String firstname = record.get(0);
+					String lastname = record.get(1);
+					String em = record.get(2);
+					Student student = getByStudentEmail(em);
+					Entity studentEntity = null;
+					if(student != null) {
+						studentEntity = student.entity;
+						studentEntity.setProperty(namePropertyName, em);
+						studentEntity.setProperty(name, firstname +","+lastname);
+						for(int i = 3; i < columns.size(); i++) {
+							studentEntity.setProperty(columns.get(i),
+									record.get(i));
+						}
+						updatedResults.add(record.toString());
+						Auth auth = Auth.getByCourseIdAndStudent(Long.valueOf(courseId), student.getKey());
+						if (auth != null) {
+						}
+							continue;
+					}
+					else {
+						// Create student
+						studentEntity = new Entity(entityKind);
+						studentEntity.setProperty(namePropertyName, em);
+						studentEntity.setProperty(name, firstname +","+lastname);
+						studentEntity.setProperty(studentSecret,
+								Util.GenerateRandomNumber(2));
+
+						for(int i = 3; i < columns.size(); i++) {
+							studentEntity.setProperty(columns.get(i),
+									record.get(i));
+						}
+						datastore.put(studentEntity);
+						createdResults.add(record.toString());
+					}
+
+					Auth.create(Long.valueOf(courseId), studentEntity.getKey(), AuthPermissions.STUDENT, false);
+					txn.commit();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					throw e;
+				} finally {
+					if (txn != null && txn.isActive())
+						txn.rollback();
+				}
+			}
+			return Util.getJsonString("Add Students Record Result", "", 
+					new String[] {"updatedRecords", "createdRecords"}, updatedResults, createdResults);
+		} catch (Exception e) {
+			throw e;
 		}
 	}
 	

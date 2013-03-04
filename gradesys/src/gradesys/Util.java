@@ -1,11 +1,11 @@
 package gradesys;
 
+import java.io.BufferedReader;
+import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import com.google.appengine.api.users.User;
-import com.google.appengine.api.users.UserService;
-import com.google.appengine.api.users.UserServiceFactory;
 import com.google.appengine.labs.repackaged.org.json.JSONArray;
 import com.google.appengine.labs.repackaged.org.json.JSONException;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
@@ -89,15 +89,32 @@ public class Util {
 		return jsonObject.toString();
 	}
 	
-	public static String getMissingParameter(String msg) throws JSONException {
+	public static String getJsonErrorMsg(String msg) throws JSONException {
 		JSONObject jsonObject = new JSONObject();
-		jsonObject.put("errorMsg", msg);
+		jsonObject.put("error", msg);
+		return jsonObject.toString();
+	}
+	
+	public static String getJsonString(String heading, String delimeter,  String[] msgHdngs, List<String>...msgs) throws JSONException {
+		JSONObject jsonObject = new JSONObject();
+		
+		JSONObject jsonObj = new JSONObject();
+		for(int i = 0; i < msgs.length; i++) {
+			List<String> msg = msgs[i];
+			JSONArray jsonArray = new JSONArray();
+			for(int j = 0; j < msg.size(); j++) {
+				jsonArray.put(msg.get(j));
+			}
+			if(jsonArray.length() != 0)
+				jsonObj.put(msgHdngs[i], jsonArray);
+		}
+		jsonObject.put(heading, jsonObj);
 		return jsonObject.toString();
 	}
 	
 	public static String courseNotFoundError() throws JSONException {
 		JSONObject jsonObject = new JSONObject();
-		jsonObject.put("errorMsg", "Course not found in the store. Either course is deleted or not created.");
+		jsonObject.put("error", "Course not found in the store. Either course is deleted or not created.");
 		return jsonObject.toString();
 	}
 	
@@ -137,6 +154,50 @@ public class Util {
 	    }
 
 	    return val;
+    }
+	
+	public static List<List<String>> parseCSVformat(String csvdata) throws Exception {
+		
+		if(Util.isEmpty(csvdata)) {
+			return null;
+		}
+		
+		StringReader strReader = null;
+		List<List<String>> csvList = new ArrayList<List<String>>();
+		try {
+			strReader = new StringReader(csvdata);
+			BufferedReader reader = new BufferedReader(strReader);
+			String line = null;
+			while((line = reader.readLine()) != null) {
+				String columns[] = line.trim().split(",");
+				List <String> columnList = new ArrayList<String>();
+				for(String clmn : columns) {
+					columnList.add(clmn.trim());
+				}
+				csvList.add(columnList);
+			}
+			List<String> columns = csvList.get(0);
+			if(columns.size() < 3) {
+				throw new Exception("Found column size less than 3. Each student record should have LastName, FirstName and Email address.");
+			}
+			if(csvList.size() == 1) {
+				throw new Exception("No records found. Each record should be seperated by new line character.");
+			}
+			int noOfcolumns = columns.size();
+			for(int i = 1; i < csvList.size(); i++) {
+				List<String> record = csvList.get(i);
+				if(record.size() <  3) {
+					throw new Exception("Some records are missing LastName, FirstName and Email address");
+				}
+			}
+			return csvList;
+		} catch(Exception ex) {
+			throw ex;
+		} finally {
+			if(strReader != null) {
+				strReader.close();
+			}
+		}
     }
 	
 	public static void main(String str[]) {

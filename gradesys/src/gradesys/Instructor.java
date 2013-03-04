@@ -11,6 +11,8 @@ import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Transaction;
+import com.google.appengine.api.datastore.Query.CompositeFilter;
+import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.users.User;
@@ -112,7 +114,11 @@ public class Instructor {
 	// Helper function that runs inside or outside a transaction.
 	public static List<Instructor> getInstructorsByCourseId(String courseId, Key instructorKey) {
 		Query query = new Query(Auth.entityKind);
-		Query.Filter filter = new FilterPredicate(Auth.namePropertyName, FilterOperator.EQUAL, Long.valueOf(courseId)); 
+		CompositeFilter filter = CompositeFilterOperator.and(
+			     FilterOperator.EQUAL.of(Auth.namePropertyName, Long.valueOf(courseId)),
+			     CompositeFilterOperator.or(
+			             FilterOperator.EQUAL.of(Auth.permissions, AuthPermissions.SUPER_USER.toString()),
+			             FilterOperator.EQUAL.of(Auth.permissions, AuthPermissions.USER.toString())));
 		query.setFilter(filter);
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 		Iterator<Entity> iterator = datastore.prepare(query).asIterator();

@@ -63,7 +63,7 @@ public class InstructorControllerServlet extends HttpServlet {
 		String courseId = req.getParameter("courseId");
 		try {
 			if(instructorName == null || courseId == null || instructorEmail == null)
-				return Util.getMissingParameter("Missing paramter either instructorName or courseId or email.");
+				return Util.getJsonErrorMsg("Missing paramter either instructorName or courseId or email.");
 
 			UserService userService = UserServiceFactory.getUserService();
 			User newUser = new User(instructorEmail, "gmail.com");
@@ -100,7 +100,7 @@ public class InstructorControllerServlet extends HttpServlet {
 		String courseId = req.getParameter("courseId");
 		try {
 			if(courseId == null)
-				return Util.getMissingParameter("Missing parameter courseId.");
+				return Util.getJsonErrorMsg("Missing parameter courseId.");
 
 			UserService userService = UserServiceFactory.getUserService();
 			User user = userService.getCurrentUser();
@@ -108,7 +108,7 @@ public class InstructorControllerServlet extends HttpServlet {
 			if(instructor == null) {
 				instructor = Instructor.getByInstructorEmail(user.getEmail());
 				if(instructor == null) {
-					return Util.getMissingParameter("Unable to find instructor with emailId  " + user.getEmail());
+					return Util.getJsonErrorMsg("Unable to find instructor with emailId  " + user.getEmail());
 				}
 			}
 			List<Instructor> instructors = Instructor.getInstructorsByCourseId(courseId, instructor.getKey());

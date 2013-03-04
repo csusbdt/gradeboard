@@ -45,7 +45,7 @@ public class StudentControllerServlet extends HttpServlet {
 		String courseId = req.getParameter("courseId");
 		try {
 			if(studentnname == null || courseId == null || studentemail == null)
-				return Util.getMissingParameter("Missing paramter either instructorName or courseId or email.");
+				return Util.getJsonErrorMsg("Missing paramter either instructorName or courseId or email.");
 
 			Student.create(studentnname, courseId, studentemail);
 			
@@ -68,7 +68,7 @@ public class StudentControllerServlet extends HttpServlet {
 		String courseId = req.getParameter("courseId");
 		try {
 			if(studentnname == null || studentid == null || studentemail == null)
-				return Util.getMissingParameter("Missing paramter either studentname or email.");
+				return Util.getJsonErrorMsg("Missing paramter either studentname or email.");
 
 			Student.update(studentid, studentnname, studentemail);
 			
@@ -83,6 +83,43 @@ public class StudentControllerServlet extends HttpServlet {
 			return "{}";
 		}	
 	}
+	
+	
+	private String addStudentBulk(HttpServletRequest req,
+			HttpServletResponse resp) {
+		// TODO Auto-generated method stub
+		String studentData = req.getParameter("studentdata");
+		String courseId = req.getParameter("courseId");
+		try {
+			if(Util.isEmpty(studentData) || Util.isEmpty(courseId))
+				return Util.getJsonErrorMsg("Missing paramter studentdata.");
+
+			List<List<String>> studentList = null;
+			try {
+				studentList = Util.parseCSVformat(studentData);
+			}catch(Exception ex) {
+				return Util.getJsonErrorMsg(ex.getMessage());
+			}
+			
+			try {
+				return Student.createBulk(studentList, courseId);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				return Util.getJsonErrorMsg(e.getMessage());
+			}
+//			
+//			List<Student> students = Student.getStudentsByCourseId(courseId);
+//			
+//			if(students.size() == 0)
+//				return "{}";
+//			
+//			return Util.getStudentsJson(students);
+		} catch (Exception e) {
+			logger.log(Level.SEVERE, "Error adding instructor", e);
+			return "{}";
+		}	
+	}
+
 	
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
@@ -99,6 +136,11 @@ public class StudentControllerServlet extends HttpServlet {
 			else if(operation.equalsIgnoreCase("editstudent")) {
 				resp.getWriter().write(editStudent(req, resp));
 			}
+			
+			else if(operation.equalsIgnoreCase("addstudentsbulk")) {
+				resp.getWriter().write(addStudentBulk(req, resp));
+			}
+			
 			return;
 		}
 		// Validate courseName and jsonData.
@@ -119,6 +161,7 @@ public class StudentControllerServlet extends HttpServlet {
 		resp.getWriter().print(jsonData);
 	}
 	
+
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {

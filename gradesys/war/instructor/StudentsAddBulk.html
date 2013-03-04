@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <title>jQuery Mobile: Demos and Documentation</title>
+   <link rel="stylesheet"  href="../css/jquery.mobile-1.2.0.css" />
+   <link rel="stylesheet" href="../css/gradeboard.css" />
+   <!-- <link rel="stylesheet" href="docs/_assets/css/jqm-docs.css" /> -->
+
+   <script src="../js/jquery.js"></script>
+   <!-- <script src="docs/_assets/js/jqm-docs.js"></script> -->
+   <script src="../js/jquery.mobile-1.2.0.js"></script>
+   <script src="../js/jquery.validate.min.js"></script>
+   <script src="../js/app.js"></script>
+   <script src="../js/app.coursedetails.js"></script>
+   <script src="../js/app.editcoursedetails.js"></script>
+   <script src="../js/app.instructors.js"></script>
+   <script src="../js/app.students.js"></script>
+
+</head>
+<body>
+<div id="studentAddBulk" data-role="page">
+	<div data-role="header" data-position="inline">
+         <a id="stadblkback" data-back="true"
+				             data-icon="back" data-transition="slide"
+		         >Back</a>
+				 <h1> GradeBoard </h1>
+				  <a href="index.html" class="ui-btn-right" id="logout"data-transition="slide"
+				 >Logout</a>
+			  </div>
+
+		      <div class="ui-bar ui-bar-a" style="text-align:center;">
+		 		<h3 style="margin-top: 8px;  float: center;">Add Multiple Students</h3>
+
+   	</div>
+
+ 	<div id="studentAddBulkContent" data-role="content">
+
+      <div id="popupError" data-role="popup" data-position-to="#content">
+         <a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="delete" data-iconpos="notext"
+            class="ui-btn-right">Close</a>
+            <p id="popupErrorMsg"></p>
+      </div>
+
+      <form id="frmAddStudentBulk">
+ 	     <div style="text-align:justified;">
+         Input student data in comma seperated list of values(csv format). First row should define column names as comma seperated list.
+			 	Each student record should have LastName, FirstName and Email address:
+   		</div>
+
+         <div data-role="fieldcontain">
+              <p>
+               <textarea cols="40" rows="8" class="required" name="textarea" id="textarea"></textarea>
+               </p>
+         </div>
+     </form>
+
+	</div>
+
+	<div data-role="footer">
+      <button id="addStudentBulk" data-icon="save">Add Students</button>
+	</div>
+
+   <script type="text/javascript">
+
+      $('#studentAddBulk').die().live('pageinit', function() {
+         $('#stadblkback').click(function() {
+            app.view.transfer("Students.html");
+         });
+
+         $('#addStudentBulk').click(function() {
+            if ($("#frmAddStudentBulk").valid()) {
+               var studentsData = $('#textarea').val();
+               var cId = app.model.courseEdit.getId();
+               $.mobile.showPageLoadingMsg("a", "Adding students : "  + "....");
+               $.ajax({
+                  type : 'POST',
+                  url : "/student/controller",
+                  data : {
+                     studentdata : studentsData,
+                     courseId : cId,
+                     op : 'addstudentsbulk'
+                  },
+                  dataType : "json"
+               }).done(function(data) {
+                  if (data.error) {
+                     console.log(data.error);
+                     $.mobile.hidePageLoadingMsg();
+                     //$('#popupError').popup('open');
+                     app.view.displayError(data.error);
+                  } else {
+                     //if(Add Students Record Result
+                     //app.model.studentList.update(data);
+                     //app.view.studentList.render();
+                     app.view.transfer("Students.html");
+                     $.mobile.hidePageLoadingMsg();
+                  }
+                }).fail(function(jqXHR, textStatus) {
+                     console.log(textStatus);
+                     $.mobile.hidePageLoadingMsg();
+                });
+            }
+          });
+      });
+   </script>
+</div>
+</body>
+</html>
