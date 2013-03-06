@@ -2,3 +2,4 @@ gradesys/war/WEB-INF/classes
 gradesys/war/WEB-INF/appengine-generated
 gradesys/.settings/org.eclipse.core.resources.prefs
 gradesys/.settings/org.eclipse.wst.xsl.core.prefs
+gradesys/.settings/com.google.appengine.eclipse.core.prefs

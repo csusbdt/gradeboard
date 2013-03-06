@@ -106,10 +106,10 @@ public class Student {
 	}
 	
 	// Helper function that runs inside or outside a transaction.
-	public static List<Student> getStudentsByCourseId(String courseId) {
+	public static List<Student> getStudentsByCourseId(Long courseId) {
 		Query query = new Query(Auth.entityKind);
 		CompositeFilter filter = CompositeFilterOperator.and(
-			     FilterOperator.EQUAL.of(Auth.namePropertyName, Long.valueOf(courseId)),
+			     FilterOperator.EQUAL.of(Auth.namePropertyName, courseId),
 			     FilterOperator.EQUAL.of(Auth.permissions, AuthPermissions.STUDENT.toString())); 
 		query.setFilter(filter);
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
