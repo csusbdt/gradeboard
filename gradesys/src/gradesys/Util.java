@@ -76,6 +76,23 @@ public class Util {
 		return jsonObject.toString();
 	}
 	
+	public static String getGradesJson(List<GradableComponent> gcs) throws JSONException {
+		if(gcs.size() == 0)
+			return "{}";
+		
+		JSONArray jsonArray = new JSONArray();
+		for(int i = 0; i < gcs.size(); i++) {
+			JSONObject jsonObject = new JSONObject();
+			GradableComponent gc = gcs.get(i);
+			jsonObject.put("name", gc.getName());
+			jsonObject.put("id", String.valueOf(gc.getID()));
+			jsonArray.put(jsonObject);
+		}
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("grades", jsonArray);
+		return jsonObject.toString();
+	}
+	
 	public static String getInstructorsJson(List<Instructor> instructors) throws JSONException {
 		if(instructors.size() == 0)
 			return "{}";

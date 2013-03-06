@@ -173,3 +173,158 @@ app.view.gcEdit = {};
    };
       
 })();
+
+/***********Grades ***************/
+app.model.gradesList = {};
+
+(function() {
+   
+   var grades;
+   
+   app.model.gradesList.update = function(data) {
+      grades = data;
+    };
+    
+    app.model.gradesList.get = function() {
+       return grades;
+    };
+})();
+
+app.view.gradesList = {};
+
+(function(gradesList) {
+
+   var grades;
+
+   app.view.gradesList.render = function() {
+
+      //render : new function() {
+      if(grades === null && gradesList.get() === null)
+         return;
+           
+      if (grades === gradesList.get())         
+         return;
+      
+      grades = gradesList.get();
+      $("#gradesList > p").remove();
+      var count = grades.grades.length;
+      $.mobile.hidePageLoadingMsg();
+      $.mobile.showPageLoadingMsg("a", "Loading Grades List....");
+      $.each(grades.grades, function(i, grade) {
+            var $p = $('<p></p>');
+            var query = "GradEdit.html"; //?gcName=" + gc;
+            var onclick = "app.model.gradeEdit.setName('" + grade.name + "');app.model.gradeEdit.setId('" + grades.id + "');app.view.transfer('" + query + "')";
+            var $a = $('<a data-role="button" style="text-align:left" data-transition="slide" onclick="' + onclick + '" href="' + query + '"></a>');            
+            $('#gradesList').append($p);
+            $a.html(grade.name);
+            $p.append($a);
+            if(i == count - 1) {
+               $('#grades').trigger('create');
+               $.mobile.hidePageLoadingMsg();
+            }
+      });
+      
+   };
+   
+   
+})(app.model.gradesList);
+
+app.controller.gradesList = {};
+
+(function(jQuery, mgradesList, vgradesList) {
+
+   app.controller.gradesList.init = function() {
+
+      // render : new function() {
+      //mgcList.update(vgradesList.render);      
+      $.ajax({
+            type : 'GET',
+            url : "/grade/controller",
+            data : {
+            op : 'listgrades',
+            courseId : app.model.courseDetails.getId(),
+            page : 'Grades.html'
+         },
+         dataType : "json"
+      }).done(function(data) {
+         if (data.err) {
+            console.log(data.err);
+         } else if(data.redirectUrl) {
+          //app.view.transfer("../index.html");
+          window.location.href.replace(data.redirectUrl);
+         } 
+         else {
+            mgradesList.update(data);
+            vgradesList.render();            
+         }
+      }).fail(function(jqXHR, textStatus) {
+            console.log(textStatus);
+            $.mobile.hidePageLoadingMsg();
+      });
+     
+      //$('#gcList').die().live('pagechange', vgcList.render);
+     
+      //};
+   };
+   
+  
+})(jQuery, app.model.gradesList, app.view.gradesList);
+
+
+/*** Grades Edit ***/
+app.model.gradesEdit = {};
+
+(function() {
+   
+   var name;
+   
+   var gcId;
+  
+   var gradesEdit;
+   
+   app.model.gradesEdit.getName = function() {
+      return name;
+   };
+
+   app.model.gradesEdit.setName = function(data) {
+      name = data;
+   };
+
+   app.model.gradesEdit.setId = function(data) {
+      gcId = data;
+   };
+   
+   app.model.gradesEdit.getId = function() {
+      return gcId;
+   };
+   
+   app.model.gradesEdit.setGCEdit = function(data) {
+      gcEdit = data;
+   };
+
+   app.model.gradesEdit.getGCEdit = function() {
+      return gcEdit;
+   };
+})();
+
+app.view.gcEdit = {};
+
+(function() {
+   
+   app.view.gcEdit.render = function() {
+      
+      //$('#gcEditContent').empty();
+      var name =  app.model.gcEdit.getName();
+      var points =  app.model.gcEdit.getPoints();
+      var deadline =  app.model.gcEdit.getDeadline();
+      
+      if(name === null)
+         return;
+     
+      
+      $('#gcName').val(name);
+      $('#gcPoints').val(points);
+      $('#gcDeadline').val(deadline);
+   };
+      
+})();

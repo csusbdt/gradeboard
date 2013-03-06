@@ -1,43 +1,52 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>jQuery Mobile: Demos and Documentation</title>
-	<link rel="stylesheet"  href="../css/jquery.mobile-1.2.0.css" />
-	<!-- <link rel="stylesheet" href="docs/_assets/css/jqm-docs.css" /> -->
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <title>jQuery Mobile: Demos and Documentation</title>
+   <link rel="stylesheet"  href="../css/jquery.mobile-1.2.0.css" />
+   <!-- <link rel="stylesheet" href="docs/_assets/css/jqm-docs.css" /> -->
 
-	<script src="../js/jquery.js"></script>
-	<!-- <script src="docs/_assets/js/jqm-docs.js"></script> -->
-	<script src="../js/jquery.mobile-1.2.0.js"></script>
+   <script src="../js/jquery.js"></script>
+   <!-- <script src="docs/_assets/js/jqm-docs.js"></script> -->
+   <script src="../js/jquery.mobile-1.2.0.js"></script>
+   <script src="../js/jquery.validate.min.js"></script>
+   <script src="../js/app.js"></script>
+   <script src="../js/app.coursedetails.js"></script>
+   <script src="../js/app.editcoursedetails.js"></script>
+   <script src="../js/app.instructors.js"></script>
+   <script src="../js/app.students.js"></script>
+   <script src="../js/app.gradablecomponents.js"></script>
 
-	<script type="text/javascript">
+   <script type="text/javascript">
 
+      $(document).bind("pageinit", function() {
+         $.mobile.showPageLoadingMsg("a", "Loading Gradable Component List....");
 
-	</script>
+      });
+   </script>
 
 </head>
 <body>
-<div id="Grades" data-role="page">
+<div id="grades" data-role="page">
 	<div data-role="header">
 		<div data-role="header">
-				<a href="index.html" id="back" data-back="true"
-								             data-icon="back" data-transition="slide"
-						         >Back</a>
-								 <h1> GradeBoard </h1>
-								  <a href="index.html" class="ui-btn-right" id="logout"data-transition="slide"
-								 >Logout</a>
-							  </div>
+         <a id="gradesback" data-back="true"
+               data-icon="back" data-transition="slide"
+          >Back</a>
+         <h1> GradeBoard </h1>
+            <a href="index.html" class="ui-btn-right" id="logout"data-transition="slide"
+               >Logout</a>
+       </div>
 
-						      <div class="ui-bar ui-bar-a" style="text-align:center;">
-						 		<h3 style="margin-top: 8px;  float: center;">Grades</h3>
-
-		</div>
+      <div class="ui-bar ui-bar-a" style="text-align:center;">
+         <h3 style="margin-top: 8px;  float: center;">Grades</h3>
+      </div>
 	</div>
 
- 	<div data-role="content">
+ 	<div id="gradesList" data-role="content">
 
-		<p>
+		<!--<p>
 			<a href="GradeEdit.html" data-role="button" data-transition="slide">Grade 1</a>
 		</p>
 
@@ -47,12 +56,29 @@
 
 		<p>
 			<a href="GradeEdit.html" data-role="button" data-transition="slide">Grade 3</a>
-		</p>
+		</p>-->
 
 	</div>
 
 	<div data-role="footer" style="min-height: 45px">
 	</div>
+
+   <script type="text/javascript">
+      //app.view.courseList.render();
+      $('#grades').die().live("pageinit", function() {
+         /*$('#logout').click(function() {
+            app.logout();
+         });*/
+
+         app.controller.gradesList.init();
+         //Back button
+         $('#gradesback').click(function() {
+            console.log("back clicked");
+            app.view.transfer('CourseDetails.html');
+         });
+
+      });
+   </script>
 
 </div>
 </body>

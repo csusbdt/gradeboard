@@ -32,6 +32,23 @@ public class GradeControllerServlet extends HttpServlet {
 		}	
 	}
 	
+	private String listGrades(HttpServletRequest req, HttpServletResponse resp) {
+		try {
+			String courseId = req.getParameter("courseId");
+			if(courseId == null)
+				return "{}";
+			
+			List<GradableComponent> gcs = GradableComponent.getGradableComponentsByCourseId(courseId);
+			
+			if(gcs.size() == 0)
+				return "{}";
+			
+			return Util.getGradesJson(gcs);
+		} catch (Exception e) {
+			return "{ \"err\": \"Unable to list gradable components.\" }";
+		}	
+	}
+	
 	
 	private String addGradableComponent(HttpServletRequest req, HttpServletResponse resp) {
 		String gcname = req.getParameter("name");
@@ -92,7 +109,6 @@ public class GradeControllerServlet extends HttpServlet {
 			else if(operation.equalsIgnoreCase("editgc")) {
 				resp.getWriter().write(editGradableComponent(req, resp));
 			}
-			
 			return;
 		}
 	}
@@ -105,6 +121,10 @@ public class GradeControllerServlet extends HttpServlet {
 		if(operation != null) { // !Util.isEmpty(operation)) {
 			if(operation.equalsIgnoreCase("listgcs")) {
 				resp.getWriter().write(listGradableComponents(req, resp));
+			}
+
+			else if(operation.equalsIgnoreCase("listgrades")) {
+				resp.getWriter().write(listGrades(req, resp));
 			}
 		} 		
 		else {

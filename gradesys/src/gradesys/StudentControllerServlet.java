@@ -36,8 +36,7 @@ public class StudentControllerServlet extends HttpServlet {
 		} catch (Exception e) {
 			return "{ \"err\": \"Unable to list courses.\" }";
 		}	
-	}
-	
+	}	
 	
 	private String addStudent(HttpServletRequest req, HttpServletResponse resp) {
 		String studentnname = req.getParameter("name");
