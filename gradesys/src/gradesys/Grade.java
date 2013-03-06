@@ -60,7 +60,7 @@ public class Grade {
 		deleteEntityByName(courseId);
 	}
 
-	public static Grade create( Key gcKey, String courseId, boolean requiresTxn)
+	public static Grade create( Key gcKey, Long courseId, boolean requiresTxn)
 			throws GradeAlreadyExistsException {
 		return new Grade(createEntity(courseId, gcKey, requiresTxn));
 	}
@@ -108,7 +108,7 @@ public class Grade {
 		return datastore.prepare(query).asSingleEntity();
 	}
 
-	public static Grade getGradeByGCId(Key gcId, String courseId)
+	public static Grade getGradeByGCId(Key gcId, Long courseId)
 			throws EntityNotFoundException {
 		
 		GradableComponent gc = GradableComponent.getByKey(gcId);
@@ -175,7 +175,7 @@ public class Grade {
 		txn.commit();
 	}
 
-	private static Entity createEntity(String courseId, Key gcKey,  boolean requiresTxn) {
+	private static Entity createEntity(Long courseId, Key gcKey,  boolean requiresTxn) {
 		DatastoreService datastore = DatastoreServiceFactory
 				.getDatastoreService();
 		Transaction txn = null;
