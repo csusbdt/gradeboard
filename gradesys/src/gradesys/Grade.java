@@ -1,8 +1,10 @@
 package gradesys;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -32,24 +34,42 @@ public class Grade {
 		return (Long) entity.getKey().getId();
 	}
 	
-	public AuthPermissions getPoints() {
-		return AuthPermissions.valueOf(entity.getProperty(points).toString());
+	public static Map<Student, Grade> getStudents( Long gcId, Long courseId) {
+		
+		List<Student> students = Student.getStudentsByCourseId(courseId);
+		if(students == null || students.size() == 0) {
+			return null;
+		}
+		
+		Map<Student, Grade> mapGrades = new HashMap<Student, Grade> ();
+		for(Student student : students) {
+			Long id = student.getID();
+			Query query = new Query(entityKind);
+			
+			Query.Filter filter = new FilterPredicate(namePropertyName,
+					FilterOperator.EQUAL, id); 
+			query.setFilter(filter);
+					
+			DatastoreService datastore = DatastoreServiceFactory
+					.getDatastoreService();		
+			Entity entity = datastore.prepare(query).asSingleEntity();
+			if(entity == null) {
+				try {
+					entity = createEntity(courseId, gcId, id, true);
+				} catch (EntityNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			
+			Grade grade = new Grade(entity);
+			mapGrades.put(student, grade);
+		}
+		return mapGrades;
 	}
 	
-	public void setPoints(String pts) {
-		entity.setProperty(points, pts);
-	}
-
-	public Long getStudentId() {
-		return (Long) entity.getProperty(namePropertyName);
-	}
-
 	public Key getGradableComponentKey() {
 		return entity.getParent();
-	}
-
-	private void setName(Long studentId) {
-		entity.setProperty(namePropertyName, studentId);
 	}
 
 	public void save() {
@@ -60,10 +80,10 @@ public class Grade {
 		deleteEntityByName(courseId);
 	}
 
-	public static Grade create( Key gcKey, Long courseId, boolean requiresTxn)
-			throws GradeAlreadyExistsException {
-		return new Grade(createEntity(courseId, gcKey, requiresTxn));
-	}
+//	public static Grade create( Key gcKey, Long courseId, Long studentId, boolean requiresTxn)
+//			throws GradeAlreadyExistsException, EntityNotFoundException {
+//		return new Grade(createEntity(courseId, gcKey, studentId, requiresTxn));
+//	}
 
 	public static Grade getByCourseId(Long courseId) {
 		Entity entity = getEntityByCourseId(courseId);
@@ -73,6 +93,11 @@ public class Grade {
 			return new Grade(entity);
 		}
 	}
+	
+	public Long getPoints() {
+		return (Long)entity.getProperty(points);
+	}
+	
 	
 	public static Grade getByCourseIdAndStudentId(Long courseId, Key studentKey) {
 		Entity entity = getEntityByCourseIdAndStudentId(courseId, studentKey);
@@ -108,28 +133,26 @@ public class Grade {
 		return datastore.prepare(query).asSingleEntity();
 	}
 
-	public static Grade getGradeByGCId(Key gcId, Long courseId)
+	/*public static Grade getGradeByGCId(Long gcId, Long courseId)
 			throws EntityNotFoundException {
 		
-		GradableComponent gc = GradableComponent.getByKey(gcId);
-		if(gc == null)
-			throw new EntityNotFoundException(gcId);
-		
+		Entity gc = DatastoreUtil.getEntityByKey(entityKind, gcId);
+	
 		Query query = new Query(entityKind);
-		query.setAncestor(gcId);
-		/*
-		 * Query.Filter filter = new FilterPredicate(namePropertyName,
+		query.setAncestor(gc.getKey());
+		
+		/*Query.Filter filter = new FilterPredicate(namePropertyName,
 		 * FilterOperator.EQUAL, courseId); query.setFilter(filter);
 		 */
-		DatastoreService datastore = DatastoreServiceFactory
+	/*	DatastoreService datastore = DatastoreServiceFactory
 				.getDatastoreService();		
 		Entity entity = datastore.prepare(query).asSingleEntity();
 		if(entity == null) {
-			return new Grade(createEntity(courseId, gcId, true));
+			return new Grade(createEntity(courseId, studentId, gc.getKey(), true));
 		}
 		
 		return new Grade(entity);
-	}
+	}*/
 
 	public static Course getCourseDetailsByInstructor(String id,
 			Key instructorKey) throws EntityNotFoundException {
@@ -175,7 +198,7 @@ public class Grade {
 		txn.commit();
 	}
 
-	private static Entity createEntity(Long courseId, Key gcKey,  boolean requiresTxn) {
+	private static Entity createEntities(Long courseId, Key gcKey,  boolean requiresTxn) throws EntityNotFoundException {
 		DatastoreService datastore = DatastoreServiceFactory
 				.getDatastoreService();
 		Transaction txn = null;
@@ -186,19 +209,47 @@ public class Grade {
 			txn.commit();
 			throw new CourseAlreadyExistsException();
 		}*/
-		Entity entity = new Entity(entityKind, gcKey);
 		List<Student> students = Student.getStudentsByCourseId(courseId);
+		
 		if(students == null || students.size() == 0) {
 			txn.commit();
-			return entity;
+			return null;
 		}
+		
 		for(Student student : students) {
+			Entity entity = new Entity(entityKind, gcKey);
 			entity.setProperty(namePropertyName, student.getID());
 			entity.setProperty(points, 0);
+			datastore.put(entity);
 		}
-		datastore.put(entity);
+		
 		if(txn != null)
 			txn.commit();
+		
+		return DatastoreUtil.getEntityByKey(GradableComponent.entityKind, gcKey.getId());
+	}
+	
+	private static Entity createEntity(Long courseId, Long gcId, Long studentId, boolean requiresTxn) throws EntityNotFoundException {
+		DatastoreService datastore = DatastoreServiceFactory
+				.getDatastoreService();
+		Transaction txn = null;
+		if(requiresTxn)
+			txn = datastore.beginTransaction();
+		/*Entity entity = getEntityByCourseId(courseId);
+		if (entity != null) {
+			txn.commit();
+			throw new CourseAlreadyExistsException();
+		}*/
+		Entity gcEntity = DatastoreUtil.getEntityByKey(GradableComponent.entityKind, gcId);
+		Entity entity = new Entity(entityKind, gcEntity.getKey());
+		entity.setProperty(namePropertyName, studentId);
+		entity.setProperty(points, 0);
+		datastore.put(entity);
+		
+		if(txn != null)
+			txn.commit();
+		
 		return entity;
 	}
+
 }

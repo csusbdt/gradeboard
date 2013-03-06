@@ -6,6 +6,7 @@ import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import com.google.appengine.labs.repackaged.org.json.JSONArray;
@@ -92,6 +93,28 @@ public class Util {
 		jsonObject.put("grades", jsonArray);
 		return jsonObject.toString();
 	}
+	
+	public static String getGradesStudentJson(Map<Student, Grade> mapgs, String gcId, String courseId) throws JSONException {
+		if(mapgs.size() == 0)
+			return "{}";
+		
+		JSONArray jsonArray = new JSONArray();
+		
+		for(Student student: mapgs.keySet()) {
+			Grade grade = mapgs.get(student);
+			JSONObject jsonObject = new JSONObject();
+			jsonObject.put("name", student.getName());
+			jsonObject.put("points", String.valueOf(grade.getPoints()));
+			jsonObject.put("gcId", gcId);
+			jsonObject.put("stuId", student.getID());
+			jsonArray.put(jsonObject);
+		}
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("grades", jsonArray);
+		return jsonObject.toString();
+	}
+	
+	
 	
 	public static String getInstructorsJson(List<Instructor> instructors) throws JSONException {
 		if(instructors.size() == 0)

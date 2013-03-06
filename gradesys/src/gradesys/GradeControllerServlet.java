@@ -2,6 +2,7 @@ package gradesys;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -44,6 +45,25 @@ public class GradeControllerServlet extends HttpServlet {
 				return "{}";
 			
 			return Util.getGradesJson(gcs);
+		} catch (Exception e) {
+			return "{ \"err\": \"Unable to list gradable components.\" }";
+		}	
+	}
+	
+	
+	private String listGradeStudents(HttpServletRequest req, HttpServletResponse resp) {
+		try {
+			String gcId = req.getParameter("gcId");
+			String courseId = req.getParameter("courseId");
+			if(courseId == null || gcId == null)
+				return "{}";
+			
+			Map<Student, Grade> mapgs = Grade.getStudents(Long.valueOf(gcId), Long.valueOf(courseId));
+			
+			if(mapgs == null || mapgs.size() == 0)
+				return "{}";
+			
+			return Util.getGradesStudentJson(mapgs, gcId, courseId);
 		} catch (Exception e) {
 			return "{ \"err\": \"Unable to list gradable components.\" }";
 		}	
@@ -125,6 +145,10 @@ public class GradeControllerServlet extends HttpServlet {
 
 			else if(operation.equalsIgnoreCase("listgrades")) {
 				resp.getWriter().write(listGrades(req, resp));
+			}
+			
+			else if(operation.equalsIgnoreCase("listgradestudents")) {
+				resp.getWriter().write(listGradeStudents(req, resp));
 			}
 		} 		
 		else {

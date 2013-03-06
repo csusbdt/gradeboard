@@ -19,7 +19,7 @@ import com.google.appengine.api.datastore.TransactionOptions;
 
 public class GradableComponent {
 
-	private static final String entityKind = "GradableComponent";
+	public static final String entityKind = "GradableComponent";
 	
 	private static final String namePropertyName = "name";
 	

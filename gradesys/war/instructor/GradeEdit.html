@@ -30,7 +30,7 @@
 <body>
 <div id="editgrades" data-role="page">
 	<div data-role="header">
-		<a href="index.html" id="greditback" data-back="true"
+		<a id="greditback" data-back="true"
 		   data-icon="back" data-transition="slide"
     >Back</a>
     <h1> GradeBoard </h1>
@@ -63,12 +63,12 @@
 
    <script type="text/javascript">
       //app.view.courseList.render();
-      $('#grades').die().live("pageinit", function() {
+      $('#editgrades').die().live("pageinit", function() {
          /*$('#logout').click(function() {
             app.logout();
          });*/
 
-         app.controller.gradeStudentList.init();
+         app.controller.gradesEdit.studentList.init();
          //Back button
          $('#greditback').click(function() {
             console.log("back clicked");
