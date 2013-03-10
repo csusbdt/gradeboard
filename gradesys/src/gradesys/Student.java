@@ -62,10 +62,10 @@ public class Student {
 		saveOrCreateEntity(entity);
 	}
 
-	public static void deleteByName(String name) {
-		deleteEntityByName(name);
-	}
-	
+//	public static void deleteByName(String name) {
+//		deleteEntityByName(name);
+//	}
+//	
 	public static Student create(String name, String courseId, String email) throws CourseAlreadyExistsException {
 		return new Student(createEntity(name, courseId, email));
 	}
@@ -76,6 +76,10 @@ public class Student {
 	
 	public static Student update(String studentId, String name, String email) throws CourseAlreadyExistsException {
 		return new Student(updateEntity(studentId, name, email));
+	}
+	
+	public static void delete(Long studentId, Long courseId) throws CourseAlreadyExistsException {
+		deleteEntityByName(studentId, courseId);
 	}
 	
 	public static Student getByKey(Key key) {
@@ -128,14 +132,39 @@ public class Student {
 		datastore.put(entity);		
 	}
 
-	private static void deleteEntityByName(String name) {
+	private static void deleteEntityByName(Long id, Long courseId) {
+		Entity entity;
+		try {
+			entity = DatastoreUtil.getEntityByKey(entityKind, Long.valueOf(id));
+		} catch (Exception e) {
+			return;
+		}
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+		
 		Transaction txn = datastore.beginTransaction();
-		Entity entity = getEntityByName(name);
+		
+		if(entity != null) {
+			Entity auth = Auth.getEntityByCourseIdAndStudentId(courseId, entity.getKey());
+			if (auth != null) {
+				datastore.delete(auth.getKey());
+			}
+		}
+		
 		if (entity != null) {
 			datastore.delete(entity.getKey());
 		}
 		txn.commit();
+		
+//		txn = datastore.beginTransaction();
+//		Entity studentEntity = null;
+//		try {
+//			studentEntity = DatastoreUtil.getEntityByKey(Student.entityKind, id);
+//		} catch (EntityNotFoundException e) {
+//			// TODO Auto-generated catch block
+//			txn.commit();
+//		}
+		
+//		txn.commit();
 	}
 	
 	public static Student getByStudentEmail(String uemail)

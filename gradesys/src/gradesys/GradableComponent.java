@@ -141,6 +141,23 @@ public class GradableComponent {
 		txn.commit();
 	}
 	
+	public static void deleteEntityByName(Long cId, Long gcId) {
+		Entity entity = null;
+		try {
+			entity = DatastoreUtil.getEntityByKey(entityKind, gcId);
+		} catch (EntityNotFoundException e) {
+			// TODO Auto-generated catch block
+			//
+		}
+		if(entity == null)
+			return;
+		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+		
+		Transaction txn = datastore.beginTransaction();
+		datastore.delete(entity.getKey());
+		txn.commit();
+	}
+	
 	public static GradableComponent getByGradableComponentCourseId(String cId, String name)
 			throws EntityNotFoundException {		
 		Query query = new Query(entityKind);

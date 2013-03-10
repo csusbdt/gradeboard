@@ -117,6 +117,39 @@ public class GradeControllerServlet extends HttpServlet {
 		}	
 	}
 	
+	private String saveStudentGrade(HttpServletRequest req, HttpServletResponse resp) {
+		String stuid = req.getParameter("studentid");
+		String gcId = req.getParameter("gcid");
+		String pts = req.getParameter("points");
+		try {
+			if(stuid == null || gcId == null || pts == null || gcId == null)
+				return Util.getJsonErrorMsg("Missing parameters.");
+
+			Grade.saveGrade(Long.valueOf(gcId), Long.valueOf(stuid), Long.valueOf(pts), true);
+			
+			return "{}";
+		} catch (Exception e) {
+			logger.log(Level.SEVERE, "Error editing gradable component", e);
+			return "{}";
+		}	
+	}
+	
+	private String deletegc(HttpServletRequest req, HttpServletResponse resp) {
+		String cid = req.getParameter("courseId");
+		String gcId = req.getParameter("gcId");
+		try {
+			if(gcId == null || cid == null)
+				return Util.getJsonErrorMsg("Missing parameters.");
+
+			GradableComponent.deleteEntityByName(Long.valueOf(cid), Long.valueOf(gcId));
+			
+			return "{}";
+		} catch (Exception e) {
+			logger.log(Level.SEVERE, "Error editing gradable component", e);
+			return "{}";
+		}	
+	}
+	
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
@@ -128,6 +161,12 @@ public class GradeControllerServlet extends HttpServlet {
 			}
 			else if(operation.equalsIgnoreCase("editgc")) {
 				resp.getWriter().write(editGradableComponent(req, resp));
+			}
+			else if(operation.equalsIgnoreCase("savestudentgrade")) {
+				resp.getWriter().write(saveStudentGrade(req, resp));
+			}
+			else if(operation.equalsIgnoreCase("deletegc")) {
+				resp.getWriter().write(deletegc(req, resp));
 			}
 			return;
 		}

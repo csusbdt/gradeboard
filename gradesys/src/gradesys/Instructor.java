@@ -71,6 +71,13 @@ public class Instructor {
 		deleteEntityByName(name);
 	}
 	
+	public static void delete(Instructor instructor) {
+		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+		Transaction tns = datastore.beginTransaction();
+		datastore.delete(instructor.getKey());
+		tns.commit();
+	}
+	
 	public static Instructor create(String name, String userId, String email) throws CourseAlreadyExistsException {
 		return new Instructor(createEntity(name, userId, email));
 	}

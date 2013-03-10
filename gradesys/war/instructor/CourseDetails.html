@@ -13,6 +13,7 @@
    <script src="../js/jquery.mobile-1.2.0.js"></script>
    <!-- <script src="../js/jquery.validate.js"></script> -->
    <script src="../js/jquery.validate.min.js"></script>
+
    <script src="../js/app.js"></script>
    <script src="../js/app.coursedetails.js"></script>
    <script src="../js/app.editcoursedetails.js"></script>
@@ -36,7 +37,7 @@
       </div>
 
  	<div id="copcontent" data-role="content">
-	   <p>
+	   <!--<p>
  	  <label for="courseName" class="ui-bar ui-bar-b">Course Name: CSE 330 01 DATA STRUCTURES</label>
  	  </p>
  	  <p>
@@ -44,7 +45,7 @@
  	  </p>
  	  <p>
  	  <label for="students" class="ui-bar ui-bar-b">Number of Seats Avaialable:10</label>
- 	  </p>
+ 	  </p>-->
     	<!--<input type="text" name="name" id="basic" value=""  />-->
 
       <!-- <form id="frmEditCourse">
@@ -55,14 +56,27 @@
             />
          </div>
      </form> -->
+
+
 	</div>
+
+   <div data-role="dialog" id="sure" data-title="Are you sure?">
+          <div data-role="content">
+            <h3 class="sure-1">???</h3>
+            <p class="sure-2">???</p>
+            <a href="#" class="sure-do" data-role="button" data-theme="b" data-rel="back">Yes</a>
+            <a href="#" data-role="button" data-theme="c" data-rel="back">No</a>
+          </div>
+     </div>
 
 	<div data-role="footer">
       <a id="cedit" data-icon="edit" data-role="button" data-transition="slide">Edit</a>
-      <a href="CourseView.html" data-icon="delete" data-role="button" data-transition="slide">Delete</a>
+      <a id="deleteCourse" data-icon="delete" data-role="button" data-transition="slide">Delete</a>
       <a href="Grades.html" id="grades" data-icon="grid" data-role="button" data-transition="slide">Grade</a>
       <a href="GradeSheet.html" data-icon="grid" data-role="button" data-transition="slide">GradeSheet</a>
 	</div>
+
+
 
    <script type="text/javascript">
 
@@ -93,17 +107,46 @@
             app.view.transfer("index.html");
          });
 
+          //Delete button
+         $('#deleteCourse').click(function() {
+            //console.log("delete clicked");
+            if (confirm("Are you sure you want to delete this Course?"))
+            {
+             var cId = app.model.courseDetails.getId();
+
+             $.mobile.showPageLoadingMsg("a", "Deleting Course: "  + "....");
+             $.ajax({
+                type : 'POST',
+                url : "/instructor/controller",
+                data : {
+                   courseId : cId,
+                   op : 'deletecourse'
+                },
+                dataType : "json"
+             }).done(function(data) {
+                if (data.error) {
+                   console.log(data.error);
+                   $.mobile.hidePageLoadingMsg();
+                   //$('#popupError').popup('open');
+                   app.view.displayError(data.error);
+                } else {
+                   //app.model.gcList.update(data);
+                   //app.view.gcList.render();
+                   app.view.transfer("Index.html");
+                   $.mobile.hidePageLoadingMsg();
+                }
+              }).fail(function(jqXHR, textStatus) {
+                   console.log(textStatus);
+                   $.mobile.hidePageLoadingMsg();
+              });
+            }
+         });
+
+
       });
 
-      /*$('#courseOperations').live("pagebeforeshow", function() {
-           /*var params = app.util.getUrlVars()["courseName"];
-           var title = app.model.courseOperations.get();
-           $('#title').empty();
-           $('#title').append(title);
-           $('#courseName').val(title);
-           $('#header').trigger('create');
 
-         });*/
+
    </script>
 </div>
 </body>

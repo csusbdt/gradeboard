@@ -146,6 +146,26 @@ public class InstructorControllerServlet extends HttpServlet {
 		}	
 	}
 	
+	private String deleteCourse(HttpServletRequest req, HttpServletResponse resp) {
+		String courseId = req.getParameter("courseId");;
+		if(Util.isEmpty(courseId)) {
+			return "{}";
+		}
+		try {
+			UserService userService = UserServiceFactory.getUserService();
+			User user = userService.getCurrentUser();
+			Instructor instructor = Instructor.getByUserId(user.getUserId());
+			if(instructor == null) {
+				return "{}";		
+			}
+			Course.deleteCourse(Long.valueOf(courseId));
+			return "{}";
+		} catch (Exception e) {
+			logger.log(Level.SEVERE, "Error saving course", e);
+			return "{}";
+		}	
+	}
+	
 	private String listCourses(HttpServletRequest req, HttpServletResponse resp) {
 		try {
 			UserService userService = UserServiceFactory.getUserService();
@@ -195,6 +215,23 @@ public class InstructorControllerServlet extends HttpServlet {
 		}	
 	}
 	
+	private String deleteInstructor(HttpServletRequest req, HttpServletResponse resp) {
+		try {
+			String instructorId = req.getParameter("instrId");
+			if(Util.isEmpty(instructorId)) {
+				return "{}";
+			}
+			Instructor instructor = Instructor.getByInstructorEmail(instructorId);
+			
+			Auth.deleteAllEntitiesInstructor(instructor.getKey());
+			Instructor.delete(instructor);
+			
+			return "{}";
+		} catch (Exception e) {
+			return "{ \"err\": \"Unable to delete instructors.\" }";
+		}	
+	}
+	
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
@@ -211,6 +248,13 @@ public class InstructorControllerServlet extends HttpServlet {
 			}
 			if(operation.equalsIgnoreCase("addinsructor")) {				
 				resp.getWriter().write(addInstructor(req, resp));
+			}
+			if(operation.equalsIgnoreCase("deleteins")) {				
+				resp.getWriter().write(deleteInstructor(req, resp));
+			}
+			
+			if(operation.equalsIgnoreCase("deletecourse")) {				
+				resp.getWriter().write(deleteCourse(req, resp));
 			}
 			
 		} else {

@@ -104,6 +104,30 @@ public class StudentControllerServlet extends HttpServlet {
 		}	
 	}
 	
+	private String deleteStudent(HttpServletRequest req, HttpServletResponse resp) {
+		String studentid = req.getParameter("id");
+		String courseId = req.getParameter("courseId");
+		
+		Long cid;
+		try {
+			cid = Long.parseLong(courseId);
+		} catch (NumberFormatException e) {
+			return "{}";
+		}
+
+		try {
+			if(studentid == null || courseId == null)
+				return Util.getJsonErrorMsg("Missing paramter either student id or courseId.");
+
+			Student.delete(Long.valueOf(studentid), cid);
+			Grade.deleteGradesByStudentId(Long.valueOf(studentid));
+			return "{}";
+		} catch (Exception e) {
+			logger.log(Level.SEVERE, "Error adding instructor", e);
+			return "{}";
+		}	
+	}
+	
 	
 	private String addStudentBulk(HttpServletRequest req,
 			HttpServletResponse resp) {
@@ -156,6 +180,10 @@ public class StudentControllerServlet extends HttpServlet {
 			
 			else if(operation.equalsIgnoreCase("addstudentsbulk")) {
 				resp.getWriter().write(addStudentBulk(req, resp));
+			}
+			
+			else if(operation.equalsIgnoreCase("deletestudent")) {
+				resp.getWriter().write(deleteStudent(req, resp));
 			}
 			
 			return;

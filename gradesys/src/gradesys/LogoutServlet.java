@@ -7,8 +7,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.json.JSONException;
+
 import com.google.appengine.api.users.UserServiceFactory;
-import com.google.appengine.labs.repackaged.org.json.JSONException;
 
 
 @SuppressWarnings("serial")

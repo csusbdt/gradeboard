@@ -103,7 +103,7 @@ public class Auth {
 	
 
 	// Helper function that runs inside or outside a transaction.
-	private static Entity getEntityByCourseIdAndStudentId(Long courseId, Key studentKey) {
+	public static Entity getEntityByCourseIdAndStudentId(Long courseId, Key studentKey) {
 		Query query = new Query(entityKind);
 		query.setAncestor(studentKey);		
 		Query.Filter filter = new FilterPredicate(namePropertyName,
@@ -159,6 +159,20 @@ public class Auth {
 			return null;
 		Course course = Course.getByCourseId(Long.valueOf(id));
 		return course;
+	}
+	
+	public static void deleteAllEntitiesInstructor(Key instructorKey) throws EntityNotFoundException {
+		Query query = new Query(entityKind);
+		query.setAncestor(instructorKey);
+		DatastoreService datastore = DatastoreServiceFactory
+				.getDatastoreService();
+		PreparedQuery pq = datastore.prepare(query);
+		boolean exists = false;
+		Transaction tns = datastore.beginTransaction();
+		for (Entity result : pq.asIterable()) {
+			datastore.delete(result.getKey());
+		}
+		tns.commit();
 	}
 
 	// Helper function that runs inside or outside a transaction.

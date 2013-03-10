@@ -326,24 +326,24 @@ app.view.gradesEdit = {};
    app.view.gradesEdit.render = function() {
 
       //render : new function() {
-      if(gsu === null && mgradesStudentList.get() === null)
+      if(gsu === null && mgradesStudentList.getStudentList() === null)
          return;
            
-      if (gsu === mgradesStudentList.get())         
+      if (gsu === mgradesStudentList.getStudentList())         
          return;
       
-      gsu = gradeStudentList.get();
+      gsu = mgradesStudentList.getStudentList();
       $("#gcEditStuList > p").remove();
-      var count = gsu.gsu.length;
+      var count = gsu.grades.length;
       $.mobile.hidePageLoadingMsg();
-      $.mobile.showPageLoadingMsg("a", "Loading GradableComponent List....");
-      $.each(gsu.gsu, function(i, gc) {
+      $.mobile.showPageLoadingMsg("a", "Loading Student List....");
+      $.each(gsu.grades, function(i, grade) {
             var $p = $('<p></p>');
             var query = "GradeStudentEdit.html"; //?gcName=" + gc;
-            var onclick = "app.model.gradeEdit.student.setName('" + gsu.name + "');app.model.gradeEdit.student.setPoints('" + gsu.points + "');app.model.gradeEdit.student.setGCId('" + gsu.id + "');app.model.gradeEdit.student.setStudentId('" + gsu.stuId + "');app.view.transfer('" + query + "')";
+            var onclick = "app.model.gradesEdit.student.setName('" + grade.name + "');app.model.gradesEdit.student.setPoints('" + grade.points + "');app.model.gradesEdit.student.setGCId('" + grade.id + "');app.model.gradesEdit.student.setStuId('" + grade.stuId + "');app.view.transfer('" + query + "')";
             var $a = $('<a data-role="button" style="text-align:left" data-transition="slide" onclick="' + onclick + '" href="' + query + '"></a>');            
             $('#gcEditStuList').append($p);
-            $a.html(gsu.name);
+            $a.html(grade.name);
             $p.append($a);
             if(i == count - 1) {
                $('#gcEditStuList').trigger('create');
@@ -354,7 +354,7 @@ app.view.gradesEdit = {};
    };
    
    
-})(app.model.gcList);
+})(app.model.gradesEdit);
 
 app.controller.gradesEdit = {};
 
@@ -384,8 +384,8 @@ app.controller.gradesEdit.studentList = {};
           window.location.href.replace(data.redirectUrl);
          } 
          else {
-            mgradesList.setStudentList(data);
-            vgradesList.render();            
+            mgradesEdit.setStudentList(data);
+            vgradesEdit.render();            
          }
       }).fail(function(jqXHR, textStatus) {
             console.log(textStatus);
@@ -398,7 +398,7 @@ app.controller.gradesEdit.studentList = {};
    };
    
   
-})(jQuery, app.model.gradesEdit, app.view.gradesList);
+})(jQuery, app.model.gradesEdit, app.view.gradesEdit);
 
 /***
 
@@ -411,6 +411,8 @@ app.model.gradesEdit.student = {};
    var name;
    
    var gcId;
+   
+   var gcName;
    
    var stuId;
   
@@ -431,7 +433,7 @@ app.model.gradesEdit.student = {};
    app.model.gradesEdit.student.getGCId = function() {
       return gcId;
    };
-  
+   
    app.model.gradesEdit.student.getStuId = function() {
       return stuId;
    };
@@ -448,3 +450,22 @@ app.model.gradesEdit.student = {};
       return points;
    };
 })();
+
+app.view.gradesEdit.student = {};
+
+(function() {
+   
+   /*** Course Edit Main page render ****/
+   app.view.gradesEdit.student.render = function() {
+      var $l = $('<label for="gradcomponent" class="ui-bar ui-bar-b"></label>');
+      $l.append(app.model.gradesEdit.getName() + ' of ' + app.model.gradesEdit.student.getName());
+      $('#legend').append($l);
+      $('#studentGradeEditContent').trigger('create');
+      $('#studentPoints').val(app.model.gradesEdit.student.getPoints());
+   };
+      
+})();
+
+app.controller.gradesEdit.student = {};
+
+

@@ -12,7 +12,10 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.PreparedQuery.TooManyResultsException;
 import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.CompositeFilter;
+import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Transaction;
@@ -44,28 +47,54 @@ public class Grade {
 		Map<Student, Grade> mapGrades = new HashMap<Student, Grade> ();
 		for(Student student : students) {
 			Long id = student.getID();
-			Query query = new Query(entityKind);
-			
-			Query.Filter filter = new FilterPredicate(namePropertyName,
-					FilterOperator.EQUAL, id); 
-			query.setFilter(filter);
-					
-			DatastoreService datastore = DatastoreServiceFactory
-					.getDatastoreService();		
-			Entity entity = datastore.prepare(query).asSingleEntity();
-			if(entity == null) {
-				try {
-					entity = createEntity(courseId, gcId, id, true);
-				} catch (EntityNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+			try {
+				Query query = new Query(entityKind);
+				query.setAncestor(DatastoreUtil.getEntityByKey(GradableComponent.entityKind, gcId).getKey());
+				Query.Filter filter = new FilterPredicate(namePropertyName,
+						FilterOperator.EQUAL, id); 
+				query.setFilter(filter);
+						
+				DatastoreService datastore = DatastoreServiceFactory
+						.getDatastoreService();		
+				Entity entity = datastore.prepare(query).asSingleEntity();
+				if(entity == null) {
+					try {
+						entity = createEntity(courseId, gcId, id, true);
+					} catch (EntityNotFoundException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
+				
+				Grade grade = new Grade(entity);
+				mapGrades.put(student, grade);
+			} catch (TooManyResultsException e) {
+				// TODO Auto-generated catch block
+				//e.printStackTrace();
+			} catch (EntityNotFoundException e) {
+				// TODO Auto-generated catch block
+				//e.printStackTrace();
 			}
-			
-			Grade grade = new Grade(entity);
-			mapGrades.put(student, grade);
 		}
 		return mapGrades;
+	}
+	
+	public static void deleteGradesByStudentId( Long studentId) {
+		
+		Query query = new Query(entityKind);
+		Query.Filter filter = new FilterPredicate(namePropertyName,
+				FilterOperator.EQUAL, studentId);
+		query.setFilter(filter);
+		DatastoreService datastore = DatastoreServiceFactory
+				.getDatastoreService();
+		Iterator<Entity> iterator = datastore.prepare(query).asIterator();
+		
+		Transaction txn = datastore.beginTransaction();
+		while (iterator.hasNext()) {
+			Entity entity = iterator.next();
+			datastore.delete(entity.getKey());
+		}
+		txn.commit();
 	}
 	
 	public Key getGradableComponentKey() {
@@ -80,10 +109,24 @@ public class Grade {
 		deleteEntityByName(courseId);
 	}
 
-//	public static Grade create( Key gcKey, Long courseId, Long studentId, boolean requiresTxn)
-//			throws GradeAlreadyExistsException, EntityNotFoundException {
-//		return new Grade(createEntity(courseId, gcKey, studentId, requiresTxn));
-//	}
+	public static void saveGrade(Long gcId, Long studentId, Long pts, boolean requiresTxn)
+			throws EntityNotFoundException {
+		Query query = new Query(entityKind);
+		query.setAncestor(DatastoreUtil.getEntityByKey(GradableComponent.entityKind, gcId).getKey());
+
+		Query.Filter filter = new FilterPredicate(namePropertyName,
+				FilterOperator.EQUAL, studentId);
+		query.setFilter(filter);
+		DatastoreService datastore = DatastoreServiceFactory
+				.getDatastoreService();
+		Entity entity = datastore.prepare(query).asSingleEntity();
+		if(entity != null) {
+			entity.setProperty(points, pts);
+		}
+		Transaction txn = datastore.beginTransaction();
+		datastore.put(entity);
+		txn.commit();
+	}
 
 	public static Grade getByCourseId(Long courseId) {
 		Entity entity = getEntityByCourseId(courseId);
@@ -131,53 +174,6 @@ public class Grade {
 		DatastoreService datastore = DatastoreServiceFactory
 				.getDatastoreService();
 		return datastore.prepare(query).asSingleEntity();
-	}
-
-	/*public static Grade getGradeByGCId(Long gcId, Long courseId)
-			throws EntityNotFoundException {
-		
-		Entity gc = DatastoreUtil.getEntityByKey(entityKind, gcId);
-	
-		Query query = new Query(entityKind);
-		query.setAncestor(gc.getKey());
-		
-		/*Query.Filter filter = new FilterPredicate(namePropertyName,
-		 * FilterOperator.EQUAL, courseId); query.setFilter(filter);
-		 */
-	/*	DatastoreService datastore = DatastoreServiceFactory
-				.getDatastoreService();		
-		Entity entity = datastore.prepare(query).asSingleEntity();
-		if(entity == null) {
-			return new Grade(createEntity(courseId, studentId, gc.getKey(), true));
-		}
-		
-		return new Grade(entity);
-	}*/
-
-	public static Course getCourseDetailsByInstructor(String id,
-			Key instructorKey) throws EntityNotFoundException {
-		Query query = new Query(entityKind);
-		query.setAncestor(instructorKey);
-		DatastoreService datastore = DatastoreServiceFactory
-				.getDatastoreService();
-		PreparedQuery pq = datastore.prepare(query);
-		boolean exists = false;
-		for (Entity result : pq.asIterable()) {
-			String courseId = result.getProperty(namePropertyName).toString();
-			if(courseId.equals(id)) {
-				exists = true;
-				break;
-			}
-//			  String firstName = (String) result.getProperty("firstName");
-//			  String lastName = (String) result.getProperty("lastName");
-//			  Long height = (Long) result.getProperty("height");
-//
-//			  System.out.println(firstName + " " + lastName + ", " + height + " inches tall");
-		}
-		if(!exists)
-			return null;
-		Course course = Course.getByCourseId(Long.valueOf(id));
-		return course;
 	}
 
 	// Helper function that runs inside or outside a transaction.

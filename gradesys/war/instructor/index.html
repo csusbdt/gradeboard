@@ -28,7 +28,7 @@
 
    $(document).bind("pageinit", function() {
       $.mobile.showPageLoadingMsg("a", "Loading Course List....");
-      app.controller.courseList.init();
+
    });
 </script>
 
@@ -62,6 +62,7 @@
    <script type="text/javascript">
       //app.view.courseList.render();
       $('#courseList').die().live("pageinit", function() {
+         app.controller.courseList.init();
          $('#logout').click(function() {
             app.logout();
 		   });

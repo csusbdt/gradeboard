@@ -59,6 +59,7 @@
 	</div>
 	<div data-role="footer">
       <button id="savegcedit" data-icon="save">Save</button>
+      <button id="deletegc" data-icon="delete">Delete</button>
 	</div>
 
    <script type="text/javascript">
@@ -104,8 +105,8 @@
                     //$('#popupError').popup('open');
                     app.view.displayError(data.error);
                  } else {
-                    app.model.gcList.update(data);
-                    app.view.gcList.render();
+                    //app.model.gcList.update(data);
+                    //app.view.gcList.render();
                     app.view.transfer("GradableComponents.html");
                     $.mobile.hidePageLoadingMsg();
                  }
@@ -114,6 +115,43 @@
                     $.mobile.hidePageLoadingMsg();
                });
            }
+         });
+
+       	 //Delete button
+         $('#deletegc').click(function() {
+            //console.log("delete clicked");
+            if (confirm("Are you sure you want to delete this Gradable Component?"))
+            {
+	           var gcid = app.model.gcEdit.getId();
+	           var cId = app.model.courseEdit.getId();
+
+	           $.mobile.showPageLoadingMsg("a", "Deleting Gradable Component: "  + "....");
+	           $.ajax({
+	              type : 'POST',
+	              url : "/grade/controller",
+	              data : {
+	                 gcId : gcid,
+	                 courseId : cId,
+	                 op : 'deletegc'
+	              },
+	              dataType : "json"
+	           }).done(function(data) {
+	              if (data.error) {
+	                 console.log(data.error);
+	                 $.mobile.hidePageLoadingMsg();
+	                 //$('#popupError').popup('open');
+	                 app.view.displayError(data.error);
+	              } else {
+	                 //app.model.gcList.update(data);
+	                 //app.view.gcList.render();
+	                 app.view.transfer("GradableComponents.html");
+	                 $.mobile.hidePageLoadingMsg();
+	              }
+	            }).fail(function(jqXHR, textStatus) {
+	                 console.log(textStatus);
+	                 $.mobile.hidePageLoadingMsg();
+	            });
+            }
          });
       });
 

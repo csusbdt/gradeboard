@@ -27,7 +27,8 @@ var app = {
          transition : 'none',
          reloadPage : false
       });
-   }   
+   }
+
 })();
 
 
