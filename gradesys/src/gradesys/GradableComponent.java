@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Logger;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -30,6 +31,8 @@ public class GradableComponent {
 	private static final String courseId = "courseId";
 
 	private Entity entity = null;
+	
+	private static final Logger logger = Logger.getLogger(GradableComponent.class.getName());
 
 	private GradableComponent(Entity entity) {
 		this.entity = entity;
@@ -121,6 +124,7 @@ public class GradableComponent {
 		while (iterator.hasNext()) {
 			Entity entity = iterator.next();
 			gcs.add(new GradableComponent(entity));
+			logger.info("Listing Gradable Component " + entity.getProperty(namePropertyName));
 		}
 		return gcs;
 	}

@@ -181,12 +181,23 @@ app.model.gradesList = {};
    
    var grades;
    
+   var courseId;
+   
    app.model.gradesList.update = function(data) {
       grades = data;
     };
     
     app.model.gradesList.get = function() {
        return grades;
+    };
+    
+    app.model.gradesList.setCourseId = function(data) {
+           console.log("Setting course id " + data);
+           courseId = data;
+    };
+    
+    app.model.gradesList.getCourseId = function() {
+           return courseId;
     };
 })();
 

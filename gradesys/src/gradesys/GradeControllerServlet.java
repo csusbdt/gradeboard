@@ -41,6 +41,7 @@ public class GradeControllerServlet extends HttpServlet {
 			
 			List<GradableComponent> gcs = GradableComponent.getGradableComponentsByCourseId(courseId);
 			
+			logger.info("Number of students in the gradable components : " + gcs.size());
 			if(gcs.size() == 0)
 				return "{}";
 			
@@ -65,7 +66,7 @@ public class GradeControllerServlet extends HttpServlet {
 			
 			return Util.getGradesStudentJson(mapgs, gcId, courseId);
 		} catch (Exception e) {
-			return "{ \"err\": \"Unable to list gradable components.\" }";
+			return "{ \"err\": \"Unable to list student components.\" }";
 		}	
 	}
 	
@@ -125,8 +126,8 @@ public class GradeControllerServlet extends HttpServlet {
 			if(stuid == null || gcId == null || pts == null || gcId == null)
 				return Util.getJsonErrorMsg("Missing parameters.");
 
-			Grade.saveGrade(Long.valueOf(gcId), Long.valueOf(stuid), Long.valueOf(pts), true);
-			
+			Grade grade = Grade.saveGrade(Long.valueOf(gcId), Long.valueOf(stuid), Long.valueOf(pts), true);
+			grade.getPoints();
 			return "{}";
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, "Error editing gradable component", e);

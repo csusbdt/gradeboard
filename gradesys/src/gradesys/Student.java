@@ -3,6 +3,7 @@ package gradesys;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Logger;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -29,6 +30,8 @@ public class Student {
 	private static final String studentSecret = "studentSecret";
 
 	private Entity entity = null;
+	
+	private static final Logger logger = Logger.getLogger(Student.class.getName());
 
 	private Student(Entity entity) {
 		this.entity = entity;
@@ -122,6 +125,7 @@ public class Student {
 		while (iterator.hasNext()) {
 			Entity entity = iterator.next();
 			students.add(new Student(getEntityByKey(entity.getParent())));
+			logger.info("Student : " + entity.getProperty("name"));
 		}
 		return students;
 	}

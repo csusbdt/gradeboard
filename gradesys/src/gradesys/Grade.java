@@ -109,7 +109,7 @@ public class Grade {
 		deleteEntityByName(courseId);
 	}
 
-	public static void saveGrade(Long gcId, Long studentId, Long pts, boolean requiresTxn)
+	public static Grade saveGrade(Long gcId, Long studentId, Long pts, boolean requiresTxn)
 			throws EntityNotFoundException {
 		Query query = new Query(entityKind);
 		query.setAncestor(DatastoreUtil.getEntityByKey(GradableComponent.entityKind, gcId).getKey());
@@ -126,6 +126,7 @@ public class Grade {
 		Transaction txn = datastore.beginTransaction();
 		datastore.put(entity);
 		txn.commit();
+		return new Grade(entity);
 	}
 
 	public static Grade getByCourseId(Long courseId) {

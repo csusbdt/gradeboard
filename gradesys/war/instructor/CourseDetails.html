@@ -72,7 +72,7 @@
 	<div data-role="footer">
       <a id="cedit" data-icon="edit" data-role="button" data-transition="slide">Edit</a>
       <a id="deleteCourse" data-icon="delete" data-role="button" data-transition="slide">Delete</a>
-      <a href="Grades.html" id="grades" data-icon="grid" data-role="button" data-transition="slide">Grade</a>
+      <a id="gradesPage" data-icon="grid" data-role="button" data-transition="slide">Grade</a>
       <a href="GradeSheet.html" data-icon="grid" data-role="button" data-transition="slide">GradeSheet</a>
 	</div>
 
@@ -95,6 +95,15 @@
             console.log('courseId : ' + app.model.courseDetails.getId());
             app.model.courseEdit.update(app.model.courseDetails.getName(), app.model.courseDetails.getId());
             app.view.transfer('CourseEdit.html');
+         });
+
+
+         $('#gradesPage').click(function() {
+            //console.log("save clicked");
+            //console.log(app.model.courseDetails.getName());
+            console.log('courseId : ' + app.model.courseDetails.getId());
+            app.model.gradesList.setCourseId(app.model.courseDetails.getId());
+            app.view.transfer('Grades.html');
          });
 
          $('#copsave').click(function() {
