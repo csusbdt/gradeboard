@@ -22,7 +22,7 @@ public class GradeControllerServlet extends HttpServlet {
 			if(courseId == null)
 				return "{}";
 			
-			List<GradableComponent> gcs = GradableComponent.getGradableComponentsByCourseId(courseId);
+			List<GradableComponent> gcs = GradableComponent.getGradableComponentsByCourseId(Long.valueOf(courseId));
 			
 			if(gcs.size() == 0)
 				return "{}";
@@ -39,7 +39,7 @@ public class GradeControllerServlet extends HttpServlet {
 			if(courseId == null)
 				return "{}";
 			
-			List<GradableComponent> gcs = GradableComponent.getGradableComponentsByCourseId(courseId);
+			List<GradableComponent> gcs = GradableComponent.getGradableComponentsByCourseId(Long.valueOf(courseId));
 			
 			logger.info("Number of students in the gradable components : " + gcs.size());
 			if(gcs.size() == 0)
@@ -82,7 +82,7 @@ public class GradeControllerServlet extends HttpServlet {
 
 			GradableComponent.create(gcname, courseId, gcpoints, gcdeadline);
 			
-			List<GradableComponent> gcs = GradableComponent.getGradableComponentsByCourseId(courseId);
+			List<GradableComponent> gcs = GradableComponent.getGradableComponentsByCourseId(Long.valueOf(courseId));
 			
 			if(gcs.size() == 0)
 				return "{}";
@@ -106,7 +106,7 @@ public class GradeControllerServlet extends HttpServlet {
 
 			GradableComponent.update(gcId, courseId, gcname, gcpoints, gcdeadline);
 			
-			List<GradableComponent> gcs = GradableComponent.getGradableComponentsByCourseId(courseId);
+			List<GradableComponent> gcs = GradableComponent.getGradableComponentsByCourseId(Long.valueOf(courseId));
 			
 			if(gcs.size() == 0)
 				return "{}";

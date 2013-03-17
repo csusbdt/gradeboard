@@ -88,7 +88,7 @@ public class StudentControllerServlet extends HttpServlet {
 
 		try {
 			if(studentnname == null || studentid == null || studentemail == null)
-				return Util.getJsonErrorMsg("Missing paramter either studentname or email.");
+				return Util.getJsonErrorMsg("Missing parameter either studentname or email.");
 
 			Student.update(studentid, studentnname, studentemail);
 			
@@ -117,7 +117,7 @@ public class StudentControllerServlet extends HttpServlet {
 
 		try {
 			if(studentid == null || courseId == null)
-				return Util.getJsonErrorMsg("Missing paramter either student id or courseId.");
+				return Util.getJsonErrorMsg("Missing parameter either student id or courseId.");
 
 			Student.delete(Long.valueOf(studentid), cid);
 			Grade.deleteGradesByStudentId(Long.valueOf(studentid));
@@ -203,8 +203,8 @@ public class StudentControllerServlet extends HttpServlet {
 		}
 		String jsonData;
 		try {
-			jsonData = Course.getGradesheetJson(cid);
-		} catch (CourseNotFoundException e) {
+			jsonData = Util.getGradesheetJson(cid);
+		} catch (Exception e) {
 			resp.sendError(HttpServletResponse.SC_NOT_FOUND);
 			return;
 		}

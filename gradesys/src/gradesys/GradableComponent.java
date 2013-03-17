@@ -114,9 +114,9 @@ public class GradableComponent {
 	}
 	
 	// Helper function that runs inside or outside a transaction.
-	public static List<GradableComponent> getGradableComponentsByCourseId(String cId) {
+	public static List<GradableComponent> getGradableComponentsByCourseId(Long cId) {
 		Query query = new Query(GradableComponent.entityKind);
-		Filter filter = FilterOperator.EQUAL.of(courseId, Long.valueOf(cId)); 
+		Filter filter = FilterOperator.EQUAL.of(courseId, cId); 
 		query.setFilter(filter);
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 		Iterator<Entity> iterator = datastore.prepare(query).asIterator();

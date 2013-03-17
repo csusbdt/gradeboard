@@ -11,6 +11,7 @@ import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.PreparedQuery.TooManyResultsException;
 import com.google.appengine.api.datastore.Query;
@@ -79,6 +80,65 @@ public class Grade {
 		return mapGrades;
 	}
 	
+	public static Map<Student, String> getStudentScores( Long courseId, List<Student> students, List<GradableComponent> gcs) {
+		
+		if(students == null || students.size() == 0) {
+			return null;
+		}
+		
+		if(courseId == null) {
+			return null;
+		}
+		
+		Map<Student, String> mapScores = new HashMap<Student, String> ();
+			
+		for(Student student : students) {
+			String scores = "";
+			Long id = student.getID();
+			try {
+				Query query = new Query(entityKind);
+				Query.Filter filter = new FilterPredicate(namePropertyName,
+						FilterOperator.EQUAL, id); 
+				query.setFilter(filter);
+						
+				DatastoreService datastore = DatastoreServiceFactory
+						.getDatastoreService();		
+				Iterator<Entity> gradeEntities = datastore.prepare(query).asIterator();
+				Map<Key, Grade> gcsgradeMap = new HashMap<Key, Grade>();
+				while (gradeEntities.hasNext()) {
+					Entity entity = gradeEntities.next();
+					Grade grade = new Grade(entity);
+					gcsgradeMap.put(grade.getGradableComponentKey(), grade);
+				}
+				
+				for(GradableComponent gc: gcs) {
+					Grade grade = gcsgradeMap.get(gc.getKey());
+					if(grade == null)
+						scores += ",";
+					else
+						scores += grade.getPoints() + ",";
+				}
+				
+				int index;
+				if((index = scores.lastIndexOf(",")) > 0) {
+					scores = scores.substring(0, index);
+				}
+				
+				mapScores.put(student, scores);
+				
+			} catch (TooManyResultsException e) {
+				// TODO Auto-generated catch block
+				//e.printStackTrace();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				//e.printStackTrace();
+			}
+		}
+
+		
+		return mapScores;
+	}
+	
 	public static void deleteGradesByStudentId( Long studentId) {
 		
 		Query query = new Query(entityKind);
@@ -110,9 +170,9 @@ public class Grade {
 	}
 
 	public static Grade saveGrade(Long gcId, Long studentId, Long pts, boolean requiresTxn)
-			throws EntityNotFoundException {
+			throws Exception {
 		Query query = new Query(entityKind);
-		query.setAncestor(DatastoreUtil.getEntityByKey(GradableComponent.entityKind, gcId).getKey());
+		query.setAncestor(KeyFactory.createKey(GradableComponent.entityKind, gcId));
 
 		Query.Filter filter = new FilterPredicate(namePropertyName,
 				FilterOperator.EQUAL, studentId);
@@ -122,10 +182,12 @@ public class Grade {
 		Entity entity = datastore.prepare(query).asSingleEntity();
 		if(entity != null) {
 			entity.setProperty(points, pts);
+		} else {
+			throw new Exception("Grade or Gradable component not found.");
 		}
-		Transaction txn = datastore.beginTransaction();
+		//Transaction txn = datastore.beginTransaction();
 		datastore.put(entity);
-		txn.commit();
+		//txn.commit();
 		return new Grade(entity);
 	}
 

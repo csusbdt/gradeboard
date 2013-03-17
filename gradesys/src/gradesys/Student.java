@@ -60,6 +60,10 @@ public class Student {
 	private void setEmail(String e) {
 		entity.setProperty(namePropertyName, e);
 	}
+	
+	public String getStudentSecret() {
+		return (String) entity.getProperty(studentSecret);
+	}
 
 	public void save() {
 		saveOrCreateEntity(entity);
@@ -204,7 +208,11 @@ public class Student {
 			Entity studentEntity = null;
 			if(student == null) {
 				//Create student
-				studentEntity = new Entity(entityKind);
+				
+				Course course = Course.getByCourseId(Long.valueOf(courseId));
+				if(course == null)
+					throw new CourseNotFoundException();
+				studentEntity = new Entity(entityKind, course.getKey());
 				studentEntity.setProperty(namePropertyName, em);
 				studentEntity.setProperty(name, sname);
 				studentEntity.setProperty(studentSecret, Util.GenerateRandomNumber(2));
@@ -257,7 +265,10 @@ public class Student {
 					}
 					else {
 						// Create student
-						studentEntity = new Entity(entityKind);
+						Course course = Course.getByCourseId(Long.valueOf(courseId));
+						if(course == null)
+							throw new CourseNotFoundException();
+						studentEntity = new Entity(entityKind, course.getKey());
 						studentEntity.setProperty(namePropertyName, em);
 						studentEntity.setProperty(name, firstname +","+lastname);
 						studentEntity.setProperty(studentSecret,
