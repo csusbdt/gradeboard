@@ -30,7 +30,7 @@ public class Grade {
 	
 	private Entity entity = null;
 
-	private Grade(Entity entity) {
+	public Grade(Entity entity) {
 		this.entity = entity;
 	}
 
@@ -185,6 +185,7 @@ public class Grade {
 		} else {
 			throw new Exception("Grade or Gradable component not found.");
 		}
+		
 		//Transaction txn = datastore.beginTransaction();
 		datastore.put(entity);
 		//txn.commit();

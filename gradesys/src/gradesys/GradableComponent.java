@@ -54,8 +54,13 @@ public class GradableComponent {
 		entity.setProperty(namePropertyName, uname);
 	}
 	
-	public Object getPoints() {
-		return entity.getProperty(points);
+	public int getPoints() {
+		try {
+			return Integer.valueOf(entity.getProperty(points).toString());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			return 0;
+		}
 	}
 	
 	private void setPoints(String e) {

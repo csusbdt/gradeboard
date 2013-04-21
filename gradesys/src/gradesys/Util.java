@@ -293,6 +293,9 @@ public class Util {
 				scoresArray.put(Integer.valueOf(str));
 			}
 			studentJson.put("scores", scoresArray);
+			studentJson.put("grade", student.getGradeEarned());
+			studentJson.put("attempted", student.getPointsAttempted());
+			studentJson.put("percent", student.getCurrentPercent());
 			studentsJson.put(studentJson);
 		}
 		JSONArray objNameArray = new JSONArray();

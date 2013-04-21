@@ -10,6 +10,7 @@ import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.TransactionOptions;
 import com.google.appengine.api.datastore.Query.CompositeFilter;
@@ -28,6 +29,14 @@ public class Student {
 	private static final String name = "name";
 	
 	private static final String studentSecret = "studentSecret";
+	
+	private static final String pointsEarned = "pointsEarned";
+	
+	private static final String pointsAttempted = "pointsAttempted";
+	
+	private static final String currentPercent = "currentPercent";
+	
+	private static final String gradeEarned = "gradeEarned";
 
 	private Entity entity = null;
 	
@@ -63,6 +72,90 @@ public class Student {
 	
 	public String getStudentSecret() {
 		return (String) entity.getProperty(studentSecret);
+	}
+	
+	public void updateGrade(Long studentId, Long courseId) {
+		List<GradableComponent> gcs = GradableComponent.getGradableComponentsByCourseId(courseId);
+		int totalPoints = 0;
+		int pointsRcvd = 0;
+		for(GradableComponent gc : gcs) {
+			totalPoints += gc.getPoints();
+			Query query = new Query(Grade.entityKind);
+			query.setAncestor(gc.getKey());
+
+			Query.Filter filter = new FilterPredicate(namePropertyName,
+					FilterOperator.EQUAL, studentId);
+			query.setFilter(filter);
+			DatastoreService datastore = DatastoreServiceFactory
+					.getDatastoreService();
+			Entity entity = datastore.prepare(query).asSingleEntity();
+			if(entity != null) {
+				Grade grade = new Grade(entity);
+				int points = grade.getPoints().intValue();
+				pointsRcvd  += points;
+			}
+		}
+		
+		try {
+			Entity studentEntity = DatastoreUtil.getEntityByKey(entityKind, studentId);
+			DatastoreService datastore = DatastoreServiceFactory
+					.getDatastoreService();
+			Transaction txn = datastore.beginTransaction();
+			//Create student
+			studentEntity.setProperty(pointsAttempted, totalPoints);
+			studentEntity.setProperty(pointsEarned, pointsRcvd);
+			if(totalPoints != 0) {
+				double percent = pointsRcvd / totalPoints * 100;
+				studentEntity.setProperty(currentPercent, percent);
+			}
+			
+			datastore.put(studentEntity);					
+			txn.commit();
+		} catch (EntityNotFoundException e) {
+			// TODO Auto-generated catch block
+			
+		}
+		
+	}
+
+	public static String getNamePropertyname() {
+		return namePropertyName;
+	}
+
+	public int getPointsEarned() {
+		try {
+			return Integer.valueOf(entity.getProperty(pointsEarned).toString());
+		} catch (NumberFormatException e) {
+			// TODO Auto-generated catch block
+			return 0;
+		}
+	}
+
+	public int getPointsAttempted() {
+		try {
+			return Integer.valueOf(entity.getProperty(pointsAttempted).toString());
+		} catch (NumberFormatException e) {
+			// TODO Auto-generated catch block
+			return 0;
+		}
+	}
+
+	public int getCurrentPercent() {
+		try {
+			return Integer.valueOf(entity.getProperty(currentPercent).toString());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			return 0;
+		}
+	}
+
+	public String getGradeEarned() {
+		try {
+			return entity.getProperty(gradeEarned).toString();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			return "";
+		}
 	}
 
 	public void save() {
@@ -118,17 +211,24 @@ public class Student {
 	
 	// Helper function that runs inside or outside a transaction.
 	public static List<Student> getStudentsByCourseId(Long courseId) {
-		Query query = new Query(Auth.entityKind);
-		CompositeFilter filter = CompositeFilterOperator.and(
+		Query query = new Query(entityKind);
+		List<Student> students = new ArrayList<Student>();
+		try {
+			query.setAncestor(DatastoreUtil.getEntityByKey(Course.entityKind, courseId).getKey());
+		} catch (EntityNotFoundException e) {
+			// TODO Auto-generated catch block
+			return students;
+		}
+		/*CompositeFilter filter = CompositeFilterOperator.and(
 			     FilterOperator.EQUAL.of(Auth.namePropertyName, courseId),
-			     FilterOperator.EQUAL.of(Auth.permissions, AuthPermissions.STUDENT.toString())); 
-		query.setFilter(filter);
+			     FilterOperator.EQUAL.of(Auth.permissions, AuthPermissions.STUDENT.toString())); */
+		//query.setFilter(filter);
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 		Iterator<Entity> iterator = datastore.prepare(query).asIterator();
-		List<Student> students = new ArrayList<Student>();
+		
 		while (iterator.hasNext()) {
 			Entity entity = iterator.next();
-			students.add(new Student(getEntityByKey(entity.getParent())));
+			students.add(new Student(entity));
 			logger.info("Student : " + entity.getProperty("name"));
 		}
 		return students;
@@ -196,9 +296,9 @@ public class Student {
 			Student student = getByStudentEmail(em);
 			if(student != null) {
 				//Check for auth if exists just return
-				Auth auth = Auth.getByCourseIdAndStudent(Long.valueOf(courseId), student.getKey());
-				if(auth != null)
-					return student.entity;
+				//Auth auth = Auth.getByCourseIdAndStudent(Long.valueOf(courseId), student.getKey());
+				//if(auth != null)
+				return student.entity;
 			}
 			DatastoreService datastore = DatastoreServiceFactory
 					.getDatastoreService();
@@ -216,9 +316,13 @@ public class Student {
 				studentEntity.setProperty(namePropertyName, em);
 				studentEntity.setProperty(name, sname);
 				studentEntity.setProperty(studentSecret, Util.GenerateRandomNumber(2));
+				studentEntity.setProperty(gradeEarned, "");
+				studentEntity.setProperty(pointsEarned, 0);
+				studentEntity.setProperty(pointsAttempted, 0);
+				studentEntity.setProperty(currentPercent, 0);
 				datastore.put(studentEntity);
 			} 
-			Auth.create(Long.valueOf(courseId), studentEntity.getKey(), AuthPermissions.STUDENT, false);					
+			//Auth.create(Long.valueOf(courseId), studentEntity.getKey(), AuthPermissions.STUDENT, false);					
 			txn.commit();
 			return studentEntity;
 		} catch (Exception e) {
@@ -253,14 +357,18 @@ public class Student {
 						studentEntity = student.entity;
 						studentEntity.setProperty(namePropertyName, em);
 						studentEntity.setProperty(name, firstname +","+lastname);
+						studentEntity.setProperty(gradeEarned, "");
+						studentEntity.setProperty(pointsEarned, 0);
+						studentEntity.setProperty(pointsAttempted, 0);
+						studentEntity.setProperty(currentPercent, 0);
 						for(int i = 3; i < columns.size(); i++) {
 							studentEntity.setProperty(columns.get(i),
 									record.get(i));
 						}
 						updatedResults.add(record.toString());
-						Auth auth = Auth.getByCourseIdAndStudent(Long.valueOf(courseId), student.getKey());
-						if (auth != null) {
-						}
+						//Auth auth = Auth.getByCourseIdAndStudent(Long.valueOf(courseId), student.getKey());
+						//if (auth != null) {
+						//}
 							continue;
 					}
 					else {
@@ -273,6 +381,10 @@ public class Student {
 						studentEntity.setProperty(name, firstname +","+lastname);
 						studentEntity.setProperty(studentSecret,
 								Util.GenerateRandomNumber(2));
+						studentEntity.setProperty(gradeEarned, "");
+						studentEntity.setProperty(pointsEarned, 0);
+						studentEntity.setProperty(pointsAttempted, 0);
+						studentEntity.setProperty(currentPercent, 0);
 
 						for(int i = 3; i < columns.size(); i++) {
 							studentEntity.setProperty(columns.get(i),
@@ -327,4 +439,5 @@ public class Student {
 				txn.rollback();
 		}
 	}
+
 }

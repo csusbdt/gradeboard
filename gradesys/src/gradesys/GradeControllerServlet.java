@@ -127,7 +127,9 @@ public class GradeControllerServlet extends HttpServlet {
 				return Util.getJsonErrorMsg("Missing parameters.");
 
 			Grade grade = Grade.saveGrade(Long.valueOf(gcId), Long.valueOf(stuid), Long.valueOf(pts), true);
-			grade.getPoints();
+			Long points = grade.getPoints();
+			
+			
 			return "{}";
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, "Error editing gradable component", e);
