@@ -290,7 +290,11 @@ public class Util {
 			String[] strArray = scores.split(",");
 			JSONArray scoresArray = new JSONArray();
 			for(String str: strArray) {
-				scoresArray.put(Integer.valueOf(str));
+				if (str.length() == 0) {
+					scoresArray.put("");
+				} else {
+					scoresArray.put(Integer.valueOf(str));
+				}
 			}
 			studentJson.put("scores", scoresArray);
 			studentJson.put("grade", student.getGradeEarned());

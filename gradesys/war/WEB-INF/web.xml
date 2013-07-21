@@ -93,5 +93,15 @@
 	<welcome-file-list>
 		<welcome-file>index.html</welcome-file>
 	</welcome-file-list>
+   
+   <servlet>
+      <servlet-name>GradeBoard</servlet-name>
+      <servlet-class>gradesys.GradeBoardServlet</servlet-class>
+   </servlet>
+
+   <servlet-mapping>
+      <servlet-name>GradeBoard</servlet-name>
+      <url-pattern>/board</url-pattern>
+   </servlet-mapping> 
  
 </web-app>
